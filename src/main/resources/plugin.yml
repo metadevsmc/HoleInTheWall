@@ -1,0 +1,10 @@
+name: HoleInTheWall
+version: '${project.version}'
+main: org.metadevs.holeinthewall.HoleInTheWall
+api-version: 1.18
+depend:
+  - WorldEdit
+authors: [ metadevs ]
+description: Recreation of the famous HoleInTheWall game
+commands:
+  hitw:

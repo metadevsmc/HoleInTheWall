@@ -1,0 +1,13 @@
+database: 'hitw.db'
+lang: en
+
+arena:
+  default-min-players: 12
+  default-max-players: 24
+
+lobby:
+  cooldown: 30 #in seconds
+  bossbar:
+    title: '&a&lGame starting in {seconds-left}'
+    color: 'GREEN' #RED, GREEN, YELLOW, BLUE, PURPLE, WHITE, PINK
+    health: 100
