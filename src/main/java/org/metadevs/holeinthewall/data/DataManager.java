@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DataManager {
 
-    private HoleInTheWall plugin;
+    private final HoleInTheWall plugin;
     private File dataFolder;
     private File arenasFolder;
     private File wallsFolder;

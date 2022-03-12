@@ -6,7 +6,7 @@ import org.metadevs.holeinthewall.metalib.messages.MessageHandler;
 
 public final class MetaLibs<T extends JavaPlugin> {
 
-    private T plugin;
+    private final T plugin;
     private MessageHandler<T> messageHandler;
     private SQLiteManager<T> sqlite;
 

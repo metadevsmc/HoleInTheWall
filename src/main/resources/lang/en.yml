@@ -16,6 +16,7 @@ error:
     not-enough-players: "&c Not enough players to start the arena, {minPlayers} needed currently {players}"
     no-arenas: "&c There are no arenas"
     full: "&c The arena {name} is full"
+    not-started: "&c The arena {name} has not started yet"
   wall:
     name-not-specified: "&c You must specify a name for the new wall"
     name-already-exists: "&c The wall {name} already exists"
@@ -35,3 +36,4 @@ success:
     deleted: "&a The arena {name} has been deleted"
     joined: "&a You have joined the arena {name}"
     left: "&a You have left the game"
+    start: "&a The arena {name} has started"

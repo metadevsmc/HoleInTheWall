@@ -85,6 +85,12 @@ public class ArenaCmdProvider extends SubCommand {
 
                 }
                 break;
+            case "start":
+                StartCmdProvider startCmdProvider = new StartCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
+                if (startCmdProvider.validateArgs()) {
+                    startCmdProvider.execute();
+                }
+                break;
             default:
                 sendHelp();
                 break;
@@ -115,6 +121,9 @@ public class ArenaCmdProvider extends SubCommand {
             player.sendMessage("");
             messageHandler.sendMessage(player, "&7- /hitw &carena &7info <name>");
             messageHandler.sendMessage(player, "   &7Show the arena infos");
+            player.sendMessage("");
+            messageHandler.sendMessage(player, "&7- /hitw &carena &7start <name>");
+            messageHandler.sendMessage(player, "   &7Start the arena with the given name");
             player.sendMessage("");
         }
         messageHandler.sendMessage(player, "&7- /hitw &carena &7list");

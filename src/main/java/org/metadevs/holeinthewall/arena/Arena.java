@@ -117,7 +117,7 @@ public class Arena  {
     }
 
     public boolean canStart() {
-        if (Status.ENDING.equals(this.status)|| Status.PLAYING.equals(this.status))
+        if (Status.ENDING.equals(this.status) || Status.PLAYING.equals(this.status))
             throw new IllegalStateException("Cannot start an arena that is already playing or ending");
         return this.players.size() >= this.minPlayers;
     }
