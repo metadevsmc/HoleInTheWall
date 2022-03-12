@@ -87,7 +87,7 @@ public class Wall {
             for (int x = 0; x < this.width; x++) {
                 sb.append(this.grid[y][x]);
             }
-            pattern.add(new String(this.grid[y]));
+            pattern.add(sb.toString());
         }
         return pattern;
     }
