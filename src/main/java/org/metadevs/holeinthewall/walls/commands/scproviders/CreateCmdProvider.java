@@ -7,12 +7,12 @@ import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.metalib.Utils;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
-import org.metadevs.holeinthewall.walls.Wall;
 
 
 public class CreateCmdProvider extends SubCommand {
 
     private Region region;
+    private String name;
 
 
     public CreateCmdProvider(HoleInTheWall plugin, Player player, String... args) {
@@ -21,31 +21,30 @@ public class CreateCmdProvider extends SubCommand {
 
     @Override
     public boolean validateArgs() {
-        if (!checkArgs()) {
-            return false;
+        if (args.length < 1) {
+            messageHandler.sendMessage(player, "error.wall.name-not-specified", "You must specify a name for the arena.");
+            return  false;
         }
-        String name = args[0];
+        name = args[0];
         if (plugin.getWallsManager().exists(name)) {
-            messageHandler.sendMessage(player, "error.wall.name-already-exists", "&c The wall {name} already exists", new Placeholder("name", name));
+            messageHandler.sendMessage(player, "error.wall.name-already-exists", "&c The wall {name} already exists", new Placeholder("{name}", name));
             return false;
         }
 
         try {
-           region = Utils.retrieveRegion(player);
+            region = Utils.retrieveRegion(player);
         } catch (IncompleteRegionException e) {
             messageHandler.sendMessage(player, "error.region.incomplete");
             return false;
-
-
+        }
         return true;
     }
 
     @Override
     public void execute() {
 
-            Wall wall = plugin.getWallsManager().create(name, region);
-        plugin.getWallsManager().create;
-        messageHandler.sendMessage(player, "success.wall.created", "&a The wall {name} has been created", new Placeholder("name", name));
+        plugin.getWallsManager().createWall(name, region);
+        messageHandler.sendMessage(player, "success.wall.created", "&a The wall {name} has been created", new Placeholder("{name}", name));
     }
 
 

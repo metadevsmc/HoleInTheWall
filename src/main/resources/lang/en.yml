@@ -19,6 +19,7 @@ error:
   wall:
     name-not-specified: "&c You must specify a name for the new wall"
     name-already-exists: "&c The wall {name} already exists"
+    name-not-exists: "&c The wall {name} does not exist"
 
 ############################################################################
 general:

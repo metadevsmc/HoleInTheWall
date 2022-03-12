@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.commands.ArenaCmdProvider;
-import org.metadevs.holeinthewall.walls.commands.scproviders.AddWallCmdProvider;
 import org.metadevs.holeinthewall.metalib.messages.MessageHandler;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
+import org.metadevs.holeinthewall.walls.commands.WallCmdProvider;
 
 import java.util.Arrays;
 
@@ -52,10 +52,10 @@ public class HITWCmd implements CommandExecutor {
                 if (arenaCmdProvider.validateArgs())
                     arenaCmdProvider.execute();
                 break;
-            case "walls":
-                AddWallCmdProvider addWallCmdProvider = new AddWallCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
-                if (addWallCmdProvider.validateArgs())
-                    addWallCmdProvider.execute();
+            case "wall":
+                WallCmdProvider wallCmdProvider = new WallCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
+                if (wallCmdProvider.validateArgs())
+                    wallCmdProvider.execute();
                 break;
             case "help":
                 sendHelp(player, isAdmin);
@@ -70,11 +70,11 @@ public class HITWCmd implements CommandExecutor {
     }
 
     public void sendHelp(Player sender, boolean isAdmin) {
-        messageHandler.sendMessage(sender, "&7&m&l]----------------------[&r&c&lHoleInTheWall&7&m&l]----------------------[");
+        messageHandler.sendMessage(sender, "&7&m&l]-----------------[&r&c&lHoleInTheWall&7&m&l]-----------------[");
         sender.sendMessage("");
-        messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&larena &7- &aShow all arena related commands");
         messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lhelp &7- &aShow this help");
         if (isAdmin) {
+            messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lwall &7- &aShow all wall related commands");
             messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lreload &7- &aReload the plugin");
         }
     }

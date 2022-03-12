@@ -12,11 +12,29 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Wall {
-    String name;
+
+
+    private String name;
     private char[][] grid;
     private int width;
     private int height;
     private ConcurrentHashMap<Character, Material> materials;
+
+    public Wall(String name, ConcurrentHashMap<Character, String> materials, List<String> pattern) {
+        this.name = name;
+        this.materials = new ConcurrentHashMap<>();
+        for (Map.Entry<Character, String> entry : materials.entrySet()) {
+            this.materials.put(entry.getKey(), Material.valueOf(entry.getValue()));
+        }
+        this.height = pattern.size();
+        this.width = pattern.get(0).length();
+        this.grid = new char[this.height][this.width];
+        for (int y = 0; y < this.height; y++) {
+            for (int x = 0; x < this.width; x++) {
+                this.grid[y][x] = pattern.get(y).charAt(x);
+            }
+        }
+    }
 
 
     public int getWidth() {
@@ -31,7 +49,8 @@ public class Wall {
         return this.grid[y][x];
     }
 
-    public Wall(Location min, Location max) {
+    public Wall(String name, Location min, Location max) {
+        this.name = name;
         materials = new ConcurrentHashMap<>();
 
         this.width = (max.getBlockX() - min.getBlockX() == 0 ?  max.getBlockZ() - min.getBlockZ() : max.getBlockX() - min.getBlockX());
@@ -55,18 +74,26 @@ public class Wall {
         }
     }
 
-    public static Wall fromRegion(String name, Region region) {
+    public static Wall craftFromRegion(String name, Region region) {
         Location min = new Location(BukkitAdapter.adapt(region.getWorld()), region.getMinimumPoint().getX(), region.getMinimumPoint().getY(), region.getMinimumPoint().getZ());
         Location max = new Location(BukkitAdapter.adapt(region.getWorld()), region.getMaximumPoint().getX(), region.getMaximumPoint().getY(), region.getMaximumPoint().getZ());
-        return new Wall(min, max);
+        return new Wall(name, min, max);
     }
 
     public List<String> getPattern() {
         ArrayList<String> pattern = new ArrayList<>();
         for (int y = 0; y < this.height; y++) {
+            StringBuilder sb = new StringBuilder();
+            for (int x = 0; x < this.width; x++) {
+                sb.append(this.grid[y][x]);
+            }
             pattern.add(new String(this.grid[y]));
         }
         return pattern;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Map<Character, Material> getMaterials() {

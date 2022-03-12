@@ -2,8 +2,11 @@ package org.metadevs.holeinthewall.walls.commands;
 
 import org.bukkit.entity.Player;
 import org.metadevs.holeinthewall.HoleInTheWall;
+import org.metadevs.holeinthewall.arena.commands.scproviders.manage.DeleteCmdProvider;
 import org.metadevs.holeinthewall.walls.commands.scproviders.CreateCmdProvider;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
+
+import java.util.Arrays;
 
 public class WallCmdProvider extends SubCommand {
 
@@ -35,12 +38,16 @@ public class WallCmdProvider extends SubCommand {
         String subCommand = args[0];
         switch (subCommand) {
             case "create":
-                CreateCmdProvider createCmdProvider = new CreateCmdProvider(plugin, player, args);
+                CreateCmdProvider createCmdProvider = new CreateCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
                 if (createCmdProvider.validateArgs()) {
                     createCmdProvider.execute();
                 }
                 break;
             case "delete":
+                DeleteCmdProvider deleteCmdProvider = new DeleteCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
+                if (deleteCmdProvider.validateArgs()) {
+                    deleteCmdProvider.execute();
+                }
                 break;
             default:
                 sendHelp();
@@ -54,12 +61,12 @@ public class WallCmdProvider extends SubCommand {
         messageHandler.sendMessage(player, "&7&m&l]------------------[&r&aWalls&7&m&l]------------------[");
         player.sendMessage("");
         messageHandler.sendMessage(player, "&7- /hitw &awall &7create <name>");
-        messageHandler.sendMessage(player, "   &7Add a wall to the arena with the given name");
+        messageHandler.sendMessage(player, "   &7Create a new wall with the given name.");
         player.sendMessage("");
         messageHandler.sendMessage(player, "&7- /hitw &awall &7delete <name>");
         messageHandler.sendMessage(player, "   &7Delete the wall with the given name");
         player.sendMessage("");
-        messageHandler.sendMessage(player, "&7&m&l]------------------[&r&aAena&7&m&l]------------------[");
+        messageHandler.sendMessage(player, "&7&m&l]------------------[&r&aWalls&7&m&l]------------------[");
     }
 }
 

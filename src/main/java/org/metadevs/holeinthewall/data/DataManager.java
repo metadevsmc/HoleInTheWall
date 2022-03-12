@@ -12,6 +12,7 @@ import org.metadevs.holeinthewall.walls.Wall;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,14 +52,16 @@ public class DataManager {
 
     public void saveWall(Wall wall) {
         CompletableFuture.runAsync(() -> {
-            FileHandler fileHandler = new FileHandler(arenasFolder, wall.getName());
-            ConfigurationSection wallSection = wallsSection.createSection(i++ + "");
-            ConfigurationSection materialSection = wallSection.createSection("material");
+            FileHandler fileHandler = new FileHandler(wallsFolder, wall.getName());
+            FileConfiguration config = fileHandler.getConfig();
+            ConfigurationSection wallSection = config.createSection(wall.getName());
+            ConfigurationSection materialSection = wallSection.createSection("materials");
             for (Character c: wall.getMaterials().keySet()) {
-                materialSection.set(c.toString(), wall.getMaterials().get(c));
+                materialSection.set(c.toString(), wall.getMaterials().get(c).name());
             }
             wallSection.set("pattern", wall.getPattern());
-        }
+            fileHandler.save();
+        });
     }
 
     public void saveArena(Arena arena) {
@@ -86,12 +89,30 @@ public class DataManager {
         });
     }
 
+    public Collection<Wall> loadWalls() {
+        ArrayList<Wall> walls = new ArrayList<>();
+        File[] files = wallsFolder.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : wallsFolder.listFiles()) {
+                FileHandler fileHandler = FileHandler.load(wallsFolder, file);
+                String name = file.getName().replace(".yml", "");
+                FileConfiguration config = fileHandler.getConfig();
+                if (!config.isConfigurationSection(name)) {
+                    plugin.getMetaLibs().messageHandler().sendMessage(Bukkit.getConsoleSender(), "&cInvalid wall file: " + name);
+                    continue;
+                }
 
-    public void deleteArena(String name) {
-        File file = new File(arenasFolder, name);
-        if (file.exists()) {
-            file.delete();
+                ConfigurationSection wallSection = config.getConfigurationSection(name);
+                ConfigurationSection materialSection = wallSection.getConfigurationSection("materials");
+                ConcurrentHashMap<Character, String> materials = new ConcurrentHashMap<>();
+                for (String c : materialSection.getKeys(false)) {
+                    materials.put(c.charAt(0), materialSection.getString(c));
+                }
+                List<String> pattern = wallSection.getStringList("pattern");
+                walls.add(new Wall(name, materials, pattern));
+            }
         }
+        return walls;
     }
 
     public Collection<Arena> loadArenas() {
@@ -138,4 +159,17 @@ public class DataManager {
         return arenas;
     }
 
+    public void deleteWall(String name) {
+        File file = new File(wallsFolder, name+".yml");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public void deleteArena(String name) {
+        File file = new File(arenasFolder, name+".yml");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 }

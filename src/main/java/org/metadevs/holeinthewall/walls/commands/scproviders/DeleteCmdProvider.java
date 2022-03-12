@@ -1,9 +1,9 @@
-package org.metadevs.holeinthewall.arena.commands.scproviders.manage;
+package org.metadevs.holeinthewall.walls.commands.scproviders;
 
 import org.bukkit.entity.Player;
 import org.metadevs.holeinthewall.HoleInTheWall;
-import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
+import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
 
 public class DeleteCmdProvider extends SubCommand {
     private String name;
@@ -17,8 +17,8 @@ public class DeleteCmdProvider extends SubCommand {
             return false;
         }
         name = args[0];
-        if (!plugin.getArenaManager().exists(name)) {
-            messageHandler.sendMessage(player, "error.arena.name-not-exists", "The arena {name} does not exists.", new Placeholder("name", name));
+        if (!plugin.getWallsManager().exists(name)) {
+            messageHandler.sendMessage(player, "error.wall.name-not-exists", "The wall {name} does not exists.", new Placeholder("name", name));
             return false;
         }
 
@@ -27,8 +27,8 @@ public class DeleteCmdProvider extends SubCommand {
 
     public void execute() {
 
-        plugin.getArenaManager().deleteArena(name);
-        messageHandler.sendMessage(player, "success.arena.deleted", "&a The arena {name} has been updated", new Placeholder("{name}", name));
+        plugin.getWallsManager().deleteWall(name);
+        messageHandler.sendMessage(player, "success.wall.deleted", "&a The wall {name} has been deleted", new Placeholder("{name}", name));
 
     }
 }

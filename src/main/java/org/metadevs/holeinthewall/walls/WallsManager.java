@@ -1,9 +1,8 @@
 package org.metadevs.holeinthewall.walls;
 
-import org.bukkit.configuration.ConfigurationSection;
+import com.sk89q.worldedit.regions.Region;
 import org.metadevs.holeinthewall.HoleInTheWall;
 
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WallsManager {
@@ -25,14 +24,8 @@ public class WallsManager {
     }
 
     private void loadAllWalls() {
-        int i = 0;
-        for (Wall wall: arena.getWalls()) {
-            ConfigurationSection wallSection = wallsSection.createSection(i++ + "");
-            ConfigurationSection materialSection = wallSection.createSection("material");
-            for (Character c: wall.getMaterials().keySet()) {
-                materialSection.set(c.toString(), wall.getMaterials().get(c));
-            }
-            wallSection.set("pattern", wall.getPattern());
+        for (Wall wall: plugin.getDataManager().loadWalls()) {
+            walls.put(wall.getName(), wall);
         }
     }
 
@@ -41,4 +34,14 @@ public class WallsManager {
     }
 
 
+    public void createWall(String name, Region region) {
+        Wall wall =  Wall.craftFromRegion(name, region);
+        walls.put(name,wall);
+        plugin.getDataManager().saveWall(wall);
+    }
+
+    public void deleteWall(String name) {
+        walls.remove(name);
+        plugin.getDataManager().deleteWall(name);
+    }
 }
