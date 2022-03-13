@@ -217,6 +217,10 @@ public class Arena  {
     public void startGameTask(HoleInTheWall plugin) {
         CompletableFuture.runAsync(() -> {
 
+            try {
+
+
+
             boolean inGame = true;
 
             int speed = 20;
@@ -228,9 +232,7 @@ public class Arena  {
 
                 Material[][] wallBlocks = plugin.getWallsManager().getMaterials(wall);
 
-                plugin.getWallsManager().generateWall(wall, this, direction, wallBlocks);
-
-                boolean isMoving = true;
+                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getWallsManager().generateWall(wall, this, direction, wallBlocks));
 
                 try {
                     plugin.getWallsManager().moveTask(wall, this, direction, wallBlocks, speed).get();
@@ -246,6 +248,10 @@ public class Arena  {
                 }
 
             System.out.println("Game ended");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         });
     }
