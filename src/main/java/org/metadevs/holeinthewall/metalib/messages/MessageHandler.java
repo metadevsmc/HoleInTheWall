@@ -91,6 +91,15 @@ public class MessageHandler <T extends JavaPlugin> {
     }
 
     /**
+     * Send the message to the audience
+     * @param audience the Audience to send the message to
+     * @param message the message to send
+     */
+    public void sendMessage(Audience audience, Component message) {
+        audience.sendMessage(message);
+    }
+
+    /**
      * Send a message to any Audience retrieved from the config file or the default one
      * @param audience the Audience to send the message to
      * @param key the key of the message to send
@@ -127,4 +136,12 @@ public class MessageHandler <T extends JavaPlugin> {
     }
 
 
+    public String getMessage(String key, String def, Placeholder ...placeholders) {
+        String message = getMessage(key, def);
+        for (Placeholder placeholder : placeholders) {
+            message = message.replace(placeholder.getKey(), placeholder.getValue());
+        }
+        return message;
+
+    }
 }

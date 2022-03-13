@@ -3,6 +3,7 @@ package org.metadevs.holeinthewall.arena.commands;
 import org.bukkit.entity.Player;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.commands.scproviders.*;
+import org.metadevs.holeinthewall.arena.commands.scproviders.generators.WallCmdProvider;
 import org.metadevs.holeinthewall.arena.commands.scproviders.manage.CreateCmdProvider;
 import org.metadevs.holeinthewall.arena.commands.scproviders.manage.DeleteCmdProvider;
 import org.metadevs.holeinthewall.arena.commands.scproviders.manage.SetCmdProvider;
@@ -91,6 +92,12 @@ public class ArenaCmdProvider extends SubCommand {
                     startCmdProvider.execute();
                 }
                 break;
+            case "wall":
+                WallCmdProvider wallSpawnCmdProvider = new WallCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
+                if (wallSpawnCmdProvider.validateArgs()) {
+                    wallSpawnCmdProvider.execute();
+                }
+                break;
             default:
                 sendHelp();
                 break;
@@ -124,6 +131,9 @@ public class ArenaCmdProvider extends SubCommand {
             player.sendMessage("");
             messageHandler.sendMessage(player, "&7- /hitw &carena &7start <name>");
             messageHandler.sendMessage(player, "   &7Start the arena with the given name");
+            player.sendMessage("");
+            messageHandler.sendMessage(player, "&7- /hitw &carena &7wall ");
+            messageHandler.sendMessage(player, "   &7Show the wall related command");
             player.sendMessage("");
         }
         messageHandler.sendMessage(player, "&7- /hitw &carena &7list");

@@ -1,26 +1,24 @@
 package org.metadevs.holeinthewall.arena;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Nullable;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.Option;
 import org.metadevs.holeinthewall.walls.Direction;
-import org.metadevs.holeinthewall.walls.Wall;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Semaphore;
 
 public class Arena  {
 
@@ -29,9 +27,9 @@ public class Arena  {
     private int maxPlayers;
     private int minY;
     private final ConcurrentHashMap<String, Location> locations;
-    private final List<Location> wallsLocations; //for each wall there are two locations, one for the min and one for the max (total of 8, NORTH, SOUTH, EAST, WEST)
+    private final HashMap<Direction, WallSpawn> wallsLocations; //for each wall there are two locations, one for the min and one for the max (total of 8, NORTH, SOUTH, EAST, WEST)
 
-    private Status status;
+    private Status status = Status.LOBBY;
     private final Set<Player> players;
     private final Set<Player> spectators;
 
@@ -47,10 +45,10 @@ public class Arena  {
         this.locations= new ConcurrentHashMap<>();
         this.players = new HashSet<>();
         this.spectators = new HashSet<>();
-        this.wallsLocations = new ArrayList<>();
+        this.wallsLocations = new HashMap<>(4);
     }
 
-    public Arena(String name, ConcurrentHashMap<String, Location> locations, int minPlayers, int maxPlayers, int mimY, List<Location> wallsLocations) {
+    public Arena(String name, ConcurrentHashMap<String, Location> locations, int minPlayers, int maxPlayers, int mimY, HashMap<Direction, WallSpawn> wallsLocations) {
         this.name = name;
         this.locations = locations;
         this.minPlayers = minPlayers;
@@ -58,14 +56,12 @@ public class Arena  {
         this.minY = mimY;
         this.players = new HashSet<>();
         this.spectators = new HashSet<>();
-        status = Status.LOBBY;
         this.wallsLocations = wallsLocations;
     }
 
     public String getName() {
         return this.name;
     }
-
 
     public int getMaxPlayers() {
         return maxPlayers;
@@ -141,6 +137,7 @@ public class Arena  {
                 plugin.getConfigString("lobby.bossbar.title", "Game starting in {seconds-left}", new Placeholder("{seconds-left}", seconds + "")),
                 BarColor.valueOf(plugin.getConfig().getString("lobby.bossbar.color", "GREEN")),
                 BarStyle.SOLID);
+        status = Status.STARTING;
 
         cooldownBar.setVisible(true);
         players.forEach(cooldownBar::addPlayer);
@@ -167,7 +164,7 @@ public class Arena  {
                             cooldownBar.removeAll();
                             countdown = null;
                             cooldownBar = null;
-                            initCooldown(plugin);
+                            status = Status.LOBBY;
                         }
                         cancel();
                     } else {
@@ -184,9 +181,10 @@ public class Arena  {
                                     "The game will start in {seconds-left} seconds",
                                     new Placeholder("{seconds-left}", seconds + ""));
                         }
+                        cooldownBar.setProgress(((float) seconds / plugin.getConfig().getInt("lobby.cooldown", 30)));
+                        seconds--;
                     }
-                    cooldownBar.setProgress(0 + (seconds / 30.0));
-                    seconds--;
+
 
                 }
             }.runTaskTimer(plugin, 0, 20);
@@ -210,50 +208,51 @@ public class Arena  {
         return locations.get("lobby");
     }
 
-    public List<Location> getWallsLocations() {
-        return wallsLocations;
+    public void setWallSpawn(Direction direction, Region region) {
+        Location min = new Location(BukkitAdapter.adapt(region.getWorld()), region.getMinimumPoint().getX(), region.getMinimumPoint().getY(), region.getMinimumPoint().getZ());
+        Location max = new Location(BukkitAdapter.adapt(region.getWorld()), region.getMaximumPoint().getX(), region.getMaximumPoint().getY(), region.getMaximumPoint().getZ());
+
+        this.wallsLocations.put(direction,new WallSpawn(min, max));
+
     }
 
-    public void startGameTask(HoleInTheWall plugin) {
-        CompletableFuture.runAsync(() -> {
-
-            try {
-
-
-
-            boolean inGame = true;
-
-            int speed = 20;
-
-            while (inGame) {
-                Wall wall = plugin.getWallsManager().getRandomWall();
-
-                Direction direction = Direction.values()[new Random().nextInt(Direction.values().length)];
-
-                Material[][] wallBlocks = plugin.getWallsManager().getMaterials(wall);
-
-                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getWallsManager().generateWall(wall, this, direction, wallBlocks));
-
-                try {
-                    plugin.getWallsManager().moveTask(wall, this, direction, wallBlocks, speed).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                if (getNumberOfPlayers() < 2) {
-                    inGame = false;
-                }
-
-
-                }
-
-            System.out.println("Game ended");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        });
+    public Iterable<? extends WallSpawn> getWallSpawns() {
+        return wallsLocations.values();
     }
+
+    public WallSpawn getWallSpawn(Direction direction){
+        return wallsLocations.get(direction);
+    }
+
+    public boolean isStarting() {
+        return Status.STARTING.equals(status);
+    }
+
+    public boolean isLobby() {
+        return Status.LOBBY.equals(status);
+    }
+
+    public static class WallSpawn {
+        private Location mix;
+        private Location max;
+
+        public WallSpawn(Location mix, Location max) {
+            this.mix = mix;
+            this.max = max;
+        }
+
+        @Nullable
+        public Location getMin() {
+            return mix;
+        }
+
+        @Nullable
+        public Location getMax() {
+            return max;
+        }
+    }
+
 }
+
+
 

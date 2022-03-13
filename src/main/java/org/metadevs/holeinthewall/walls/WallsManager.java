@@ -4,11 +4,11 @@ import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.jetbrains.annotations.NotNull;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +33,7 @@ public class WallsManager {
     }
 
     private void loadAllWalls() {
-        for (Wall wall : plugin.getDataManager().loadWalls()) {
+        for (Wall wall: plugin.getDataManager().loadWalls()) {
             walls.put(wall.getName(), wall);
         }
     }
@@ -44,8 +44,8 @@ public class WallsManager {
 
 
     public void createWall(String name, Region region) {
-        Wall wall = Wall.craftFromRegion(name, region);
-        walls.put(name, wall);
+        Wall wall =  Wall.craftFromRegion(name, region);
+        walls.put(name,wall);
         plugin.getDataManager().saveWall(wall);
     }
 
@@ -61,14 +61,11 @@ public class WallsManager {
 
     public void generateWall(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks) {
 
-        Location[] wallLocations = getWallLocations(direction, arena);
-
-        Location min = wallLocations[0];
-        Location max = wallLocations[1];
+        Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
 
         for (int i = 0; i < wall.getHeight(); i++) {
             for (int j = 0; j < wall.getHeight(); j++) {
-                placeBlocks(min, max, wallBlocks, direction, i, j, 0);
+                placeBlocks(wallLocations.getMin(), wallLocations.getMax(), wallBlocks, direction, i, j, 0);
             }
         }
     }
@@ -87,31 +84,10 @@ public class WallsManager {
         return wallBlocks;
     }
 
-    private Location[] getWallLocations(Direction direction, Arena arena) {
+    private Arena.WallSpawn getWallLocations(Direction direction, Arena arena) {
         Location min;
         Location max;
-
-        switch (direction) {
-            case NORTH:
-                min = arena.getWallsLocations().get(0);
-                max = arena.getWallsLocations().get(1);
-                break;
-            case SOUTH:
-                min = arena.getWallsLocations().get(2);
-                max = arena.getWallsLocations().get(3);
-                break;
-            case EAST:
-                min = arena.getWallsLocations().get(4);
-                max = arena.getWallsLocations().get(5);
-                break;
-            case WEST:
-                min = arena.getWallsLocations().get(6);
-                max = arena.getWallsLocations().get(7);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + direction);
-        }
-        return new Location[]{min, max};
+        return arena.getWallSpawn(direction);
     }
 
     private void placeBlocks(Location min, Location max, Material[][] wallBlocks, Direction direction, int i, int j, int offset) {
@@ -136,9 +112,9 @@ public class WallsManager {
     }
 
     private void moveWall(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int offset) {
-        Location[] wallLocations = getWallLocations(direction, arena);
-        Location min = wallLocations[0];
-        Location max = wallLocations[1];
+        Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
+        Location min = wallLocations.getMin();
+        Location max = wallLocations.getMax();
 
         Material[][] wallBlocksCopy = Arrays.stream(wallBlocks).map(x -> Arrays.stream(x).map(y -> y = Material.AIR).toArray(Material[]::new)).toArray(Material[][]::new);
 
@@ -159,16 +135,15 @@ public class WallsManager {
 
             Direction oppositeDirection = direction.equals(Direction.NORTH) ? Direction.SOUTH : direction.equals(Direction.SOUTH) ? Direction.NORTH : direction.equals(Direction.EAST) ? Direction.WEST : Direction.EAST;
 
-            Location[] wallLocations = getWallLocations(oppositeDirection, arena);
-            Location[] wallOppositesLocations = getWallLocations(oppositeDirection, arena);
+            Arena.WallSpawn wallLocations = getWallLocations(oppositeDirection, arena);
+            Arena.WallSpawn wallOppositesLocations = getWallLocations(oppositeDirection, arena);
 
-            int distance = (int) wallLocations[0].distance(wallOppositesLocations[0]);
+            int distance = (int) wallLocations.getMin().distance(wallOppositesLocations.getMin());
 
             int task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
                 moveWall(wall, arena, direction, wallBlocks, offset[0]);
                 offset[0]++;
                 if (offset[0] == distance) {
-                    System.out.println("STOP");
                     semaphore.release();
                 }
             }, speed, speed);
@@ -178,5 +153,9 @@ public class WallsManager {
             plugin.getServer().getScheduler().cancelTask(task);
             return true;
         });
+    }
+
+    public Collection<Wall> getWalls() {
+        return walls.values();
     }
 }

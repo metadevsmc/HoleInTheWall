@@ -2,9 +2,10 @@ package org.metadevs.holeinthewall.walls.commands;
 
 import org.bukkit.entity.Player;
 import org.metadevs.holeinthewall.HoleInTheWall;
-import org.metadevs.holeinthewall.arena.commands.scproviders.manage.DeleteCmdProvider;
+import org.metadevs.holeinthewall.walls.commands.scproviders.DeleteCmdProvider;
 import org.metadevs.holeinthewall.walls.commands.scproviders.CreateCmdProvider;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
+import org.metadevs.holeinthewall.walls.commands.scproviders.ListCmdProvider;
 
 import java.util.Arrays;
 
@@ -49,6 +50,12 @@ public class WallCmdProvider extends SubCommand {
                     deleteCmdProvider.execute();
                 }
                 break;
+                case "list":
+                    ListCmdProvider listCmdProvider = new ListCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
+                    if (listCmdProvider.validateArgs()) {
+                        listCmdProvider.execute();
+                    }
+                break;
             default:
                 sendHelp();
                 break;
@@ -66,6 +73,8 @@ public class WallCmdProvider extends SubCommand {
         messageHandler.sendMessage(player, "&7- /hitw &awall &7delete <name>");
         messageHandler.sendMessage(player, "   &7Delete the wall with the given name");
         player.sendMessage("");
+        messageHandler.sendMessage(player, "&7- /hitw &awall &7list");
+        messageHandler.sendMessage(player, "   &7List all the walls");
         messageHandler.sendMessage(player, "&7&m&l]------------------[&r&aWalls&7&m&l]------------------[");
     }
 }

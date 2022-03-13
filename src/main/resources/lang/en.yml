@@ -1,10 +1,12 @@
 error:
   invalid-subcommand: "{subcommand} is not a valid subcommand"
+  direction-missing: "You must specify a direction"
   only-admins: "Only admins can use this command"
   invalid-option: "{option} is not a valid option"
   invalid-option-value: "{value} is not a valid value for {option}"
   no-option-specified: "No option specified"
   not-playing: "You are not currently playing"
+  invalid-direction: "{direction} is not a valid direction"
   region:
     incomplete: "You must select a region"
   arena:
@@ -28,8 +30,13 @@ general:
     list-header: "&7Arenas:"
     list-entry: "&7{name} &7- &7{minPlayers}/{maxPlayers} &7- &7{status}"
     starting-soon: "The game will start in {seconds-left} seconds"
+  wall:
+    list-header: "&7Walls:"
+    list-entry: "&7{name}"
 ############################################################################
 success:
+  wall-spawn:
+    set: "The spawn of the wall {direction} has been set"
   arena:
     updated: "&a The arena {name} has been updated"
     created: "&a The arena {name} has been created"

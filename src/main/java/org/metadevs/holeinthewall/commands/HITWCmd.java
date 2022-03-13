@@ -73,6 +73,7 @@ public class HITWCmd implements CommandExecutor {
         messageHandler.sendMessage(sender, "&7&m&l]-----------------[&r&c&lHoleInTheWall&7&m&l]-----------------[");
         sender.sendMessage("");
         messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lhelp &7- &aShow this help");
+        messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&larena &7- &aShow all arena related commands");
         if (isAdmin) {
             messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lwall &7- &aShow all wall related commands");
             messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lreload &7- &aReload the plugin");

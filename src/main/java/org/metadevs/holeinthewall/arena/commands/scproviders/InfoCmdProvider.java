@@ -38,6 +38,7 @@ public class InfoCmdProvider extends SubCommand {
         messageHandler.sendMessage(player, "&aSpectators: " + arena.getSpectators().size());
         messageHandler.sendMessage(player, "&aMax players: " + arena.getMaxPlayers());
         messageHandler.sendMessage(player, "&aMin players: " + arena.getMinPlayers());
+        messageHandler.sendMessage(player, "&aLobby: " + arena.getLobby());
         for (String s : arena.getLocations().keySet()) {
             Location loc = arena.getLocations().get(s);
             messageHandler.sendMessage(player, "&a" + s + ": " + loc.getWorld().getName() + " " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ());

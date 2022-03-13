@@ -77,7 +77,7 @@ public class FileHandler {
      */
     public boolean save() {
 
-        if (!file.exists() || config == null) {
+        if (config == null) {
             return false;
         }
         try {

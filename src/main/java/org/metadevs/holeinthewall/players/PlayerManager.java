@@ -27,7 +27,7 @@ public class PlayerManager {
 
     public void joinArena(Player player, Arena arena) {
         arena.addPlayer(player);
-        if (arena.getNumberOfPlayers() == 1) {
+        if (arena.getNumberOfPlayers() == arena.getMinPlayers() && arena.isLobby()) {
             plugin.getArenaManager().initArenaCooldown(arena);
         }
         player.teleport(arena.getLobby());

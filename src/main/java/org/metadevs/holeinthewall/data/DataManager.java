@@ -7,11 +7,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.metalib.files.FileHandler;
+import org.metadevs.holeinthewall.walls.Direction;
 import org.metadevs.holeinthewall.walls.Wall;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,7 +58,7 @@ public class DataManager {
             FileConfiguration config = fileHandler.getConfig();
             ConfigurationSection wallSection = config.createSection(wall.getName());
             ConfigurationSection materialSection = wallSection.createSection("materials");
-            for (Character c: wall.getMaterials().keySet()) {
+            for (Character c : wall.getMaterials().keySet()) {
                 materialSection.set(c.toString(), wall.getMaterials().get(c).name());
             }
             wallSection.set("pattern", wall.getPattern());
@@ -66,6 +68,7 @@ public class DataManager {
 
     public void saveArena(Arena arena) {
         CompletableFuture.runAsync(() -> {
+            try {
             FileHandler fileHandler = new FileHandler(arenasFolder, arena.getName());
             FileConfiguration config = fileHandler.getConfig();
             ConfigurationSection section = config.createSection(arena.getName());
@@ -81,11 +84,23 @@ public class DataManager {
             locationsSection.set("spectator", arena.getLocations().get("spectator"));
             locationsSection.set("podium", arena.getLocations().get("podium"));
             locationsSection.set("loosers", arena.getLocations().get("loosers"));
-            ConfigurationSection wallsSection = section.createSection("walls");
+            ConfigurationSection wallSpawnSection = section.createSection("wall-spawns");
+            for (Direction direction : Direction.values()) {
+                ConfigurationSection directionSection = wallSpawnSection.createSection(direction.name());
+                Arena.WallSpawn wallSpawn = arena.getWallSpawn(direction);
+                if (wallSpawn == null) {
+                    continue;
+                }
+                directionSection.set("max", arena.getWallSpawn(direction).getMin());
+                directionSection.set("min", arena.getWallSpawn(direction).getMax());
+            }
 
-
-
-            fileHandler.save();
+            if (!fileHandler.save()) {
+                Bukkit.getLogger().severe("Failed to save arena " + arena.getName());
+            }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 
@@ -129,7 +144,7 @@ public class DataManager {
                 }
 
                 ConfigurationSection section = config.getConfigurationSection(name);
-                int minPlayers=  section.getInt("min-players", plugin.getConfig().getInt("arena.default-min-players", 12));
+                int minPlayers = section.getInt("min-players", plugin.getConfig().getInt("arena.default-min-players", 12));
                 int maxPlayers = section.getInt("max-players", plugin.getConfig().getInt("arena.default-max-players", 24));
                 int mimY = section.getInt("min-Y-level", 0);
 
@@ -153,21 +168,31 @@ public class DataManager {
                         locations.put("loosers", locationsSection.getLocation("loosers"));
                     }
                 }
-                arenas.add(new Arena(name, locations, minPlayers, maxPlayers, mimY));
+                ConfigurationSection wallSpawnsSection = section.getConfigurationSection("wall-spawns");
+                HashMap<Direction, Arena.WallSpawn> wallSpawns = new HashMap<>();
+                if (wallSpawnsSection != null) {
+                    for (String direction : wallSpawnsSection.getKeys(false)) {
+                        Location min = wallSpawnsSection.getLocation(direction + ".min");
+                        Location max = wallSpawnsSection.getLocation(direction + ".max");
+                        Arena.WallSpawn spawn = new Arena.WallSpawn(min, max);
+                        wallSpawns.put(Direction.valueOf(direction), spawn);
+                    }
+                    arenas.add(new Arena(name, locations, minPlayers, maxPlayers, mimY, wallSpawns));
+                }
             }
         }
         return arenas;
     }
 
     public void deleteWall(String name) {
-        File file = new File(wallsFolder, name+".yml");
+        File file = new File(wallsFolder, name + ".yml");
         if (file.exists()) {
             file.delete();
         }
     }
 
     public void deleteArena(String name) {
-        File file = new File(arenasFolder, name+".yml");
+        File file = new File(arenasFolder, name + ".yml");
         if (file.exists()) {
             file.delete();
         }

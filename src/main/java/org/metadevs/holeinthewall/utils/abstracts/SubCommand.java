@@ -30,7 +30,7 @@ public abstract class SubCommand implements CommandProvider {
             }
         }
         if (args.length < 1) {
-            messageHandler.sendMessage(player, "error.wall.name-not-specified", "You must specify a name for the arena.");
+            messageHandler.sendMessage(player, "error.arena.name-not-specified", "You must specify a name for the arena.");
             return  false;
         }
         return true;

@@ -38,6 +38,6 @@ public class StartCmdProvider extends SubCommand {
     @Override
     public void execute() {
         arena.initCooldown(plugin);
-        messageHandler.sendMessage(player, "success.arena.start", "The arena {name} has been started.", new Placeholder("name", arena.getName()));
+        messageHandler.sendMessage(player, "success.arena.start", "The arena {name} has started.", new Placeholder("name", arena.getName()));
     }
 }

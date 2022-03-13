@@ -1,13 +1,19 @@
 package org.metadevs.holeinthewall.arena;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.metalib.messages.MessageHandler;
+import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.walls.Wall;
 
 import java.util.Collection;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 public class ArenaManager {
 
@@ -57,7 +63,6 @@ public class ArenaManager {
         Arena arena = new Arena(name, plugin.getConfig().getInt("arena.default-min-players", 12), plugin.getConfig().getInt("arena.default-max-players", 24));
         arenas.put(name, arena);
         plugin.getDataManager().saveArena(arena);
-        //todo create arena in database
     }
 
     /**
@@ -99,11 +104,49 @@ public class ArenaManager {
             messaageHandler.sendMessage(Bukkit.getConsoleSender(), "Arena " + name + " doesn't exist.");
             return;
         }
+        startGameTask(arena);
 
         //todo startup logic
 
     }
 
+    public void startGameTask(Arena arena) {
+        CompletableFuture.runAsync(() -> {
+            try {
+
+                boolean inGame = true;
+
+                int speed = 20;
+
+                while (inGame) {
+                    Wall wall = plugin.getWallsManager().getRandomWall();
+
+                    Direction direction = Direction.values()[new Random().nextInt(Direction.values().length)];
+
+                    Material[][] wallBlocks = plugin.getWallsManager().getMaterials(wall);
+
+                    plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getWallsManager().generateWall(wall, arena, direction, wallBlocks));
+
+                    try {
+                        plugin.getWallsManager().moveTask(wall, arena, direction, wallBlocks, speed).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (arena.getNumberOfPlayers() < 2) {
+                        inGame = false;
+                    }
+
+
+                }
+
+                System.out.println("Game ended");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     public void initArenaCooldown(Arena arena) {
 

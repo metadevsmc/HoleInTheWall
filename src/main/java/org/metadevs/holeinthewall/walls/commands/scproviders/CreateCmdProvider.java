@@ -34,7 +34,7 @@ public class CreateCmdProvider extends SubCommand {
         try {
             region = Utils.retrieveRegion(player);
         } catch (IncompleteRegionException e) {
-            messageHandler.sendMessage(player, "error.region.incomplete");
+            messageHandler.sendMessage(player, "error.region.incomplete", "&c The region is incomplete");
             return false;
         }
         return true;

@@ -13,9 +13,11 @@ public class DeleteCmdProvider extends SubCommand {
     }
 
     public boolean validateArgs() {
-        if (!checkArgs()) {
-            return false;
+        if (args.length < 1) {
+            messageHandler.sendMessage(player, "error.wall.name-not-specified", "You must specify a name for the wall.");
+            return  false;
         }
+
         name = args[0];
         if (!plugin.getWallsManager().exists(name)) {
             messageHandler.sendMessage(player, "error.wall.name-not-exists", "The wall {name} does not exists.", new Placeholder("name", name));
