@@ -1,16 +1,17 @@
 package org.metadevs.holeinthewall.walls;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.regions.Region;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.checkerframework.checker.units.qual.min;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 public class WallsManager {
 
@@ -141,9 +142,38 @@ public class WallsManager {
 
         for (int i = 0; i < wall.getHeight(); i++) {
             for (int j = 0; j < wall.getHeight(); j++) {
-                placeBlocks(min, max, wallBlocksCopy, direction, i, j, offset-1);
+                placeBlocks(min, max, wallBlocksCopy, direction, i, j, offset - 1);
                 placeBlocks(min, max, wallBlocks, direction, i, j, offset);
             }
         }
+    }
+
+    private CompletableFuture<Boolean> moveTask(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int speed) {
+        return CompletableFuture.supplyAsync(() -> {
+            final int[] offset = {0};
+
+            Semaphore semaphore = new Semaphore(0);
+
+            Direction oppositeDirection = direction.equals(Direction.NORTH) ? Direction.SOUTH : direction.equals(Direction.SOUTH) ? Direction.NORTH : direction.equals(Direction.EAST) ? Direction.WEST : Direction.EAST;
+
+            Location[] wallLocations = getWallLocations(oppositeDirection, arena);
+            Location[] wallOppositesLocations = getWallLocations(oppositeDirection, arena);
+
+            int distance = (int) wallLocations[0].distance(wallOppositesLocations[0]);
+
+            int task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+                moveWall(wall, arena, direction, wallBlocks, offset[0]);
+                offset[0]++;
+                if (offset[0] == distance) {
+                    System.out.println("STOP");
+                    semaphore.release();
+                }
+            }, speed, speed);
+
+            semaphore.acquireUninterruptibly();
+
+            plugin.getServer().getScheduler().cancelTask(task);
+            return true;
+        });
     }
 }
