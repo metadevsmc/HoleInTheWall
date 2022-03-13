@@ -4,6 +4,7 @@ import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 
@@ -58,19 +59,7 @@ public class WallsManager {
         return walls.get((String) walls.keySet().toArray()[random.nextInt(walls.size())]);
     }
 
-    public void generateWall(Wall wall, Arena arena) {
-
-        Material[][] wallBlocks = new Material[wall.getHeight()][wall.getHeight()];
-
-
-        for (int i = 0; i < wall.getHeight(); i++) {
-            char[] mats = wall.getPattern().get(i).toCharArray();
-            for (int j = 0; j < wall.getHeight(); j++) {
-                wallBlocks[i][j] = wall.getMaterials().get(mats[j]);
-            }
-        }
-
-        Direction direction = Direction.values()[new Random().nextInt(Direction.values().length)];
+    public void generateWall(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks) {
 
         Location[] wallLocations = getWallLocations(direction, arena);
 
@@ -82,6 +71,20 @@ public class WallsManager {
                 placeBlocks(min, max, wallBlocks, direction, i, j, 0);
             }
         }
+    }
+
+
+    public Material[][] getMaterials(Wall wall) {
+        Material[][] wallBlocks = new Material[wall.getHeight()][wall.getHeight()];
+
+
+        for (int i = 0; i < wall.getHeight(); i++) {
+            char[] mats = wall.getPattern().get(i).toCharArray();
+            for (int j = 0; j < wall.getHeight(); j++) {
+                wallBlocks[i][j] = wall.getMaterials().get(mats[j]);
+            }
+        }
+        return wallBlocks;
     }
 
     private Location[] getWallLocations(Direction direction, Arena arena) {
@@ -148,7 +151,7 @@ public class WallsManager {
         }
     }
 
-    private CompletableFuture<Boolean> moveTask(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int speed) {
+    public CompletableFuture<Boolean> moveTask(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int speed) {
         return CompletableFuture.supplyAsync(() -> {
             final int[] offset = {0};
 

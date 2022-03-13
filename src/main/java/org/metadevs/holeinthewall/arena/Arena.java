@@ -2,6 +2,7 @@ package org.metadevs.holeinthewall.arena;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -12,16 +13,18 @@ import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.Option;
+import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.walls.Wall;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Semaphore;
 
 public class Arena  {
 
-    private String name;
+    private final String name;
     private int minPlayers;
     private int maxPlayers;
     private int minY;
@@ -209,6 +212,42 @@ public class Arena  {
 
     public List<Location> getWallsLocations() {
         return wallsLocations;
+    }
+
+    public void startGameTask(HoleInTheWall plugin) {
+        CompletableFuture.runAsync(() -> {
+
+            boolean inGame = true;
+
+            int speed = 20;
+
+            while (inGame) {
+                Wall wall = plugin.getWallsManager().getRandomWall();
+
+                Direction direction = Direction.values()[new Random().nextInt(Direction.values().length)];
+
+                Material[][] wallBlocks = plugin.getWallsManager().getMaterials(wall);
+
+                plugin.getWallsManager().generateWall(wall, this, direction, wallBlocks);
+
+                boolean isMoving = true;
+
+                try {
+                    plugin.getWallsManager().moveTask(wall, this, direction, wallBlocks, speed).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                if (getNumberOfPlayers() < 2) {
+                    inGame = false;
+                }
+
+
+                }
+
+            System.out.println("Game ended");
+
+        });
     }
 }
 
