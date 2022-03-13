@@ -2,10 +2,12 @@ package org.metadevs.holeinthewall.arena;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 import org.metadevs.holeinthewall.HoleInTheWall;
+import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.MessageHandler;
-import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.enums.Direction;
 import org.metadevs.holeinthewall.walls.Wall;
 
 import java.util.Collection;
@@ -113,16 +115,26 @@ public class ArenaManager {
     public void startGameTask(Arena arena) {
         CompletableFuture.runAsync(() -> {
             try {
+                arena.setStatus(Status.PLAYING);
+                new BukkitRunnable(){
+                    @Override
+                    public void run() {
+                        arena.getPlayers().forEach(player -> {
+                            player.teleport(arena.getSpawn());
+                        });
+                    }
+                }.runTask(plugin);
+
 
                 boolean inGame = true;
 
                 int speed = 20;
-
-                while (inGame) {
+                int time = 0;
+                while (inGame && time < 20) {
                     Wall wall = plugin.getWallsManager().getRandomWall();
 
                     Direction direction = Direction.values()[new Random().nextInt(Direction.values().length)];
-
+                    //gen nord
                     Material[][] wallBlocks = wall.getMaterialsGrid();
 
                     plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getWallsManager().generateWall(wall, arena, direction, wallBlocks));
@@ -133,13 +145,20 @@ public class ArenaManager {
                         e.printStackTrace();
                     }
 
-                    if (arena.getNumberOfPlayers() < 2) {
+                    if (arena.getNumberOfPlayers() < 0) {
                         inGame = false;
                     }
+                    time++;
 
 
                 }
-
+                arena.setStatus(Status.ENDING);
+                new BukkitRunnable(){
+                    @Override
+                    public void run() {
+                        arena.reset();
+                    }
+                }.runTaskLater(plugin, 20 * 20);
                 System.out.println("Game ended");
 
             } catch (Exception e) {

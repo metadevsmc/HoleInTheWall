@@ -8,7 +8,7 @@ import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.metalib.Utils;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
-import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.enums.Direction;
 
 public class SetCmdProvider extends SubCommand {
 

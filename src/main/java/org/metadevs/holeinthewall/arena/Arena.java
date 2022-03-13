@@ -15,7 +15,7 @@ import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.Option;
-import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.enums.Direction;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -232,18 +232,26 @@ public class Arena  {
         return Status.LOBBY.equals(status);
     }
 
+    public void reset() {
+        status = Status.LOBBY;
+        players.clear();
+        spectators.clear();
+        countdown = null;
+        cooldownBar = null;
+    }
+
     public static class WallSpawn {
-        private Location mix;
+        private Location min;
         private Location max;
 
-        public WallSpawn(Location mix, Location max) {
-            this.mix = mix;
+        public WallSpawn(Location min, Location max) {
+            this.min = min;
             this.max = max;
         }
 
         @Nullable
         public Location getMin() {
-            return mix;
+            return min;
         }
 
         @Nullable

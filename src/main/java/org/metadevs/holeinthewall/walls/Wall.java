@@ -33,26 +33,14 @@ public class Wall {
         this.materialsGrid = new Material[this.height][this.width];
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
+                this.grid[y][x] = pattern.get(y).charAt(x);
                 if (this.grid[y][x] == ' ') {
                     materialsGrid[y][x] = Material.AIR;
                 } else {
-                    this.grid[y][x] = pattern.get(y).charAt(x);
+                    materialsGrid[y][x] = this.materials.get(this.grid[y][x]);
                 }
             }
         }
-    }
-
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public char get(int x, int y) {
-        return this.grid[y][x];
     }
 
     public Wall(String name, Location min, Location max) {
@@ -96,6 +84,18 @@ public class Wall {
                 }
             }
         }
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public char get(int x, int y) {
+        return this.grid[y][x];
     }
 
     public static Wall craftFromRegion(String name, Region region) {

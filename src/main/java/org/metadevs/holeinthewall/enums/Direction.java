@@ -1,14 +1,17 @@
-package org.metadevs.holeinthewall.walls;
+package org.metadevs.holeinthewall.enums;
 
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 public enum Direction {
 
-    NORTH("north"), SOUTH("south"), EAST("east"), WEST("west");
+    NORTH("north", new Vector(0, 0, 1)), SOUTH("south", new Vector(0, 0, -1)), EAST("east", new Vector(-1, 0, 0)), WEST("west", new Vector(1, 0,0 ));
 
-    private String name;
+    private final String name;
+    private  final Vector to;
 
-    Direction(String name) {
+    Direction(String name, Vector to) {
+        this.to = to;
         this.name = name;
     }
 
@@ -26,5 +29,9 @@ public enum Direction {
         return null;
     }
 
-
+    public Vector getTo() {
+        return to;
+    }
 }
+
+

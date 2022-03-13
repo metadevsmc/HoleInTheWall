@@ -5,7 +5,7 @@ import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
-import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.enums.Direction;
 
 public class InfoCmdProvider extends SubCommand {
 
@@ -45,7 +45,7 @@ public class InfoCmdProvider extends SubCommand {
         messageHandler.sendMessage(player, (arena.getLocations().containsKey("loosers") ? "&a" : "&c") + "loosers location");
         messageHandler.sendMessage(player, (arena.getLocations().containsKey("podium") ? "&a" : "&c") + "podium location");
         for (Direction direction : Direction.values()) {
-            messageHandler.sendMessage(player, (arena.getWallSpawn(direction)(direction.name()) ? "&a" : "&c") + direction.name() + " location");
+            messageHandler.sendMessage(player, (arena.getWallSpawn(direction) != null ? "&a" : "&c") + direction.name() + " location");
         }
     }
 }

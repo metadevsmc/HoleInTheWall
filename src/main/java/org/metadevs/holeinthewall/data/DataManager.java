@@ -7,7 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.metalib.files.FileHandler;
-import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.enums.Direction;
 import org.metadevs.holeinthewall.walls.Wall;
 
 import java.io.File;

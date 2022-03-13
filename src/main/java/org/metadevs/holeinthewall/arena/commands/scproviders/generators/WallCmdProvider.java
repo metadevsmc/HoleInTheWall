@@ -5,7 +5,7 @@ import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.arena.commands.scproviders.generators.sc.SetCmdProvider;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
-import org.metadevs.holeinthewall.walls.Direction;
+import org.metadevs.holeinthewall.enums.Direction;
 
 import java.util.Arrays;
 
