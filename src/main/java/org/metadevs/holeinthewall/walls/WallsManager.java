@@ -71,19 +71,6 @@ public class WallsManager {
     }
 
 
-    public Material[][] getMaterials(Wall wall) {
-        Material[][] wallBlocks = new Material[wall.getHeight()][wall.getHeight()];
-
-
-        for (int i = 0; i < wall.getHeight(); i++) {
-            char[] mats = wall.getPattern().get(i).toCharArray();
-            for (int j = 0; j < wall.getHeight(); j++) {
-                wallBlocks[i][j] = wall.getMaterials().get(mats[j]);
-            }
-        }
-        return wallBlocks;
-    }
-
     private Arena.WallSpawn getWallLocations(Direction direction, Arena arena) {
         Location min;
         Location max;

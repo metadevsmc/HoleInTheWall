@@ -123,7 +123,7 @@ public class ArenaManager {
 
                     Direction direction = Direction.values()[new Random().nextInt(Direction.values().length)];
 
-                    Material[][] wallBlocks = plugin.getWallsManager().getMaterials(wall);
+                    Material[][] wallBlocks = wall.getMaterialsGrid();
 
                     plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getWallsManager().generateWall(wall, arena, direction, wallBlocks));
 

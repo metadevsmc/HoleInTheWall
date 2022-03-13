@@ -16,6 +16,7 @@ public class Wall {
 
     private String name;
     private char[][] grid;
+    private Material[][] materialsGrid;
     private int width;
     private int height;
     private ConcurrentHashMap<Character, Material> materials;
@@ -29,9 +30,14 @@ public class Wall {
         this.height = pattern.size();
         this.width = pattern.get(0).length();
         this.grid = new char[this.height][this.width];
+        this.materialsGrid = new Material[this.height][this.width];
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                this.grid[y][x] = pattern.get(y).charAt(x);
+                if (this.grid[y][x] == ' ') {
+                    materialsGrid[y][x] = Material.AIR;
+                } else {
+                    this.grid[y][x] = pattern.get(y).charAt(x);
+                }
             }
         }
     }
@@ -56,10 +62,12 @@ public class Wall {
         this.width = (zVariant ?  max.getBlockZ() - min.getBlockZ() : max.getBlockX() - min.getBlockX());
         this.height = max.getBlockY() - min.getBlockY() + 1;
         this.grid = new char[this.height][this.width];
+        this.materialsGrid = new Material[this.height][this.width];
         if (!zVariant) {
             for (int i = 0; i < this.height; i++) {
                 for (int j = 0; j < this.width; j++) {
                     Block block = min.getWorld().getBlockAt(min.getBlockX() + j, min.getBlockY() + i, min.getBlockZ());
+                    materialsGrid[height - 1 - i][j] = block.getType();
                     if (block.getType() == Material.AIR) {
                         this.grid[height - 1 - i][j] = ' ';
                     } else if (block.isSolid()) {
@@ -75,6 +83,7 @@ public class Wall {
             for (int i = 0; i < this.height; i++) {
                 for (int j = 0; j < this.width; j++) {
                     Block block = min.getWorld().getBlockAt(min.getBlockX(), min.getBlockY() + i, min.getBlockZ()+j);
+                    materialsGrid[height - 1 - i][j] = block.getType();
                     if (block.getType() == Material.AIR) {
                         this.grid[height - 1 - i][j] = ' ';
                     } else if (block.isSolid()) {
@@ -105,6 +114,14 @@ public class Wall {
             pattern.add(sb.toString());
         }
         return pattern;
+    }
+
+    public Material[][] getMaterialsGrid() {
+        return this.materialsGrid;
+    }
+
+    public char[][] getGrid() {
+        return this.grid;
     }
 
     public String getName() {
