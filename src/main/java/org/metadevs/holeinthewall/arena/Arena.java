@@ -13,7 +13,9 @@ import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.Option;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,6 +26,7 @@ public class Arena  {
     private int maxPlayers;
     private int minY;
     private final ConcurrentHashMap<String, Location> locations;
+    private final List<Location> wallsLocations; //for each wall there are two locations, one for the min and one for the max (total of 8, NORTH, SOUTH, EAST, WEST)
 
     private Status status;
     private final Set<Player> players;
@@ -41,9 +44,10 @@ public class Arena  {
         this.locations= new ConcurrentHashMap<>();
         this.players = new HashSet<>();
         this.spectators = new HashSet<>();
+        this.wallsLocations = new ArrayList<>();
     }
 
-    public Arena(String name, ConcurrentHashMap<String, Location> locations, int minPlayers, int maxPlayers, int mimY) {
+    public Arena(String name, ConcurrentHashMap<String, Location> locations, int minPlayers, int maxPlayers, int mimY, List<Location> wallsLocations) {
         this.name = name;
         this.locations = locations;
         this.minPlayers = minPlayers;
@@ -52,6 +56,7 @@ public class Arena  {
         this.players = new HashSet<>();
         this.spectators = new HashSet<>();
         status = Status.LOBBY;
+        this.wallsLocations = wallsLocations;
     }
 
     public String getName() {
@@ -200,6 +205,10 @@ public class Arena  {
 
     public Location getLobby() {
         return locations.get("lobby");
+    }
+
+    public List<Location> getWallsLocations() {
+        return wallsLocations;
     }
 }
 
