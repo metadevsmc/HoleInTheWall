@@ -76,6 +76,7 @@ public class PlayerManager {
                 if (player.isOnline()) {
                     if (isPlaying(player)) {
                         if (player.getLocation().getBlock().isSolid() || player.getEyeLocation().getBlock().isSolid()) {
+                            Arena arena = getArena(player);
                             player.setVelocity(player.getFacing().getDirection().multiply(-2));
                         }
                     }

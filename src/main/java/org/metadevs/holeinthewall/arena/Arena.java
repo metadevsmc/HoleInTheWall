@@ -17,9 +17,7 @@ import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.Option;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Arena  {
@@ -39,6 +37,8 @@ public class Arena  {
     private BukkitTask countdown;
     private int seconds;
 
+    private List<Direction> currentDirections;
+
     public Arena(String name, int minPlayers, int maxPlayers) {
         this.name = name;
         this.minPlayers = minPlayers;
@@ -48,6 +48,7 @@ public class Arena  {
         this.players = new HashSet<>();
         this.spectators = new HashSet<>();
         this.wallsLocations = new HashMap<>(4);
+        this.currentDirections = new LinkedList<>();
     }
 
     public Arena(String name, ConcurrentHashMap<String, Location> locations, int minPlayers, int maxPlayers, int mimY, HashMap<Direction, WallSpawn> wallsLocations) {
@@ -270,6 +271,11 @@ public class Arena  {
             cooldownBar.addPlayer(player);
         }
     }
+
+    public List<Direction> getCurrentDirections() {
+        return currentDirections;
+    }
+
 
     public static class WallSpawn {
         private final Location min;

@@ -1,13 +1,17 @@
 package org.metadevs.holeinthewall.walls;
 
 import com.sk89q.worldedit.regions.Region;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.units.qual.min;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.enums.Direction;
@@ -211,6 +215,23 @@ public class WallsManager {
                         semaphore.release();
                         this.cancel();
                     }
+                    Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
+                    if (wallLocations.getMin() == null || wallLocations.getMax() == null) {
+                        plugin.getLogger().warning("WallLocations is null");
+                        return;
+                    }
+                    for (Player player : arena.getPlayers()) {
+                        Location min = wallLocations.getMin();
+                        Location max = wallLocations.getMax().add(direction.getTo());
+                        if (checkPlayerIn(player, min, max)) {
+                            Bukkit.broadcastMessage(player.getName() + "maybe is in wall");
+
+                            if ((player.getLocation().getBlock().getType().isSolid() || player.getEyeLocation().getBlock().getType().isSolid()) ||
+                                    player.getLocation().add(direction.getTo()).getBlock().getType().isSolid() || player.getEyeLocation().add(direction.getTo()).getBlock().getType().isSolid()) {
+                                Bukkit.broadcastMessage(player.getName() + " is in wall");
+                            }
+                        }
+                    }
 
                 }
             }.runTaskTimer(plugin, speed, speed);
@@ -219,6 +240,10 @@ public class WallsManager {
 
             return true;
         });
+    }
+
+    private boolean checkPlayerIn(Player player, Location min, Location max) {
+        return player.getLocation().getX() >= min.getX() && player.getLocation().getX() <= max.getX() && player.getLocation().getZ() >= min.getZ() && player.getLocation().getZ() <= max.getZ();
     }
 
     private void clearWall(Wall wall, Arena arena, Direction direction, int offset) {
