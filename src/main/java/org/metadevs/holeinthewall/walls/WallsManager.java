@@ -220,18 +220,18 @@ public class WallsManager {
                         plugin.getLogger().warning("WallLocations is null");
                         return;
                     }
-//                    for (Player player : arena.getPlayers()) {
-//                        Location min = wallLocations.getMin();
-//                        Location max = wallLocations.getMax().add(direction.getTo());
-//                        if (checkPlayerIn(player, min, max)) {
-//                            Bukkit.broadcastMessage(player.getName() + "maybe is in wall");
-//
-//                            if ((player.getLocation().getBlock().getType().isSolid() || player.getEyeLocation().getBlock().getType().isSolid()) ||
-//                                    player.getLocation().add(direction.getTo()).getBlock().getType().isSolid() || player.getEyeLocation().add(direction.getTo()).getBlock().getType().isSolid()) {
-//                                Bukkit.broadcastMessage(player.getName() + " is in wall");
-//                            }
-//                        }
-//                    }
+                    for (Player player : arena.getPlayers()) {
+                        Location min = wallLocations.getMin();
+                        Location max = wallLocations.getMax().add(direction.getTo());
+                        if (checkPlayerIn(player, min, max)) {
+                            Bukkit.broadcastMessage(player.getName() + "maybe is in wall");
+
+                            if ((player.getLocation().getBlock().getType().isSolid() || player.getEyeLocation().getBlock().getType().isSolid()) ||
+                                    player.getLocation().add(direction.getTo()).getBlock().getType().isSolid() || player.getEyeLocation().add(direction.getTo()).getBlock().getType().isSolid()) {
+                                Bukkit.broadcastMessage(player.getName() + " is in wall");
+                            }
+                        }
+                    }
 
                 }
             }.runTaskTimer(plugin, speed, speed);
