@@ -221,13 +221,13 @@ public class WallsManager {
                         return;
                     }
                     for (Player player : arena.getPlayers()) {
-                        Location min = wallLocations.getMin();
-                        Location max = wallLocations.getMax().add(direction.getTo());
+                        Location min = wallLocations.getMin().clone();
+                        Location max = wallLocations.getMax().clone().add(direction.getTo());
                         if (checkPlayerIn(player, min, max)) {
                             Bukkit.broadcastMessage(player.getName() + "maybe is in wall");
 
-                            if ((player.getLocation().getBlock().getType().isSolid() || player.getEyeLocation().getBlock().getType().isSolid()) ||
-                                    player.getLocation().add(direction.getTo()).getBlock().getType().isSolid() || player.getEyeLocation().add(direction.getTo()).getBlock().getType().isSolid()) {
+                            if ((player.getLocation().clone().getBlock().getType().isSolid() || player.getEyeLocation().clone().getBlock().getType().isSolid()) ||
+                                    player.getLocation().clone().add(direction.getTo()).getBlock().getType().isSolid() || player.getEyeLocation().clone().add(direction.getTo()).getBlock().getType().isSolid()) {
                                 Bukkit.broadcastMessage(player.getName() + " is in wall");
                             }
                         }
