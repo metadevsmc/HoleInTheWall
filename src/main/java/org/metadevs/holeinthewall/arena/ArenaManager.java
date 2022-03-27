@@ -167,7 +167,6 @@ public class ArenaManager {
         Wall wall = plugin.getWallsManager().getRandomWall();
         Direction direction = directions.remove(new Random().nextInt(directions.size()));
 
-        arena.getCurrentDirections().add(direction);
 
         //gen nord
         Material[][] wallBlocks = wall.getMaterialsGrid();

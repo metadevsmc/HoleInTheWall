@@ -37,7 +37,6 @@ public class Arena  {
     private BukkitTask countdown;
     private int seconds;
 
-    private List<Direction> currentDirections;
 
     public Arena(String name, int minPlayers, int maxPlayers) {
         this.name = name;
@@ -48,7 +47,6 @@ public class Arena  {
         this.players = new HashSet<>();
         this.spectators = new HashSet<>();
         this.wallsLocations = new HashMap<>(4);
-        this.currentDirections = new LinkedList<>();
     }
 
     public Arena(String name, ConcurrentHashMap<String, Location> locations, int minPlayers, int maxPlayers, int mimY, HashMap<Direction, WallSpawn> wallsLocations) {
@@ -272,9 +270,6 @@ public class Arena  {
         }
     }
 
-    public List<Direction> getCurrentDirections() {
-        return currentDirections;
-    }
 
 
     public static class WallSpawn {
