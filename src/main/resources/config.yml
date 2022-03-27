@@ -10,4 +10,6 @@ lobby:
   bossbar:
     title: '&a&lGame starting in {seconds-left}'
     color: 'GREEN' #RED, GREEN, YELLOW, BLUE, PURPLE, WHITE, PINK
-    health: 100
+
+end:
+

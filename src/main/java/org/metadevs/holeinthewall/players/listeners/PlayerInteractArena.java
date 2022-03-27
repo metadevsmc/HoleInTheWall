@@ -7,7 +7,7 @@ import org.metadevs.holeinthewall.HoleInTheWall;
 
 public class PlayerInteractArena implements Listener {
 
-    private HoleInTheWall plugin;
+    private final HoleInTheWall plugin;
 
     public PlayerInteractArena(final HoleInTheWall plugin) {
         this.plugin = plugin;

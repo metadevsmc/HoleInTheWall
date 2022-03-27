@@ -17,12 +17,12 @@ public class InfoCmdProvider extends SubCommand {
 
     @Override
     public boolean validateArgs() {
-        if (!checkArgs()) {
+        if (checkArgs()) {
             return false;
         }
         String name = args[0];
         if (!plugin.getArenaManager().exists(name)) {
-            messageHandler.sendMessage(player, "error.arena.name-not-exists", "The arena {name} does not exists.", new Placeholder("name", name));
+            messageHandler.sendMessage(player, "error.arena.name-not-exists", "The arena {name} does not exists.", new Placeholder("{name}", name));
             return false;
         }
         arena = plugin.getArenaManager().getArena(name);

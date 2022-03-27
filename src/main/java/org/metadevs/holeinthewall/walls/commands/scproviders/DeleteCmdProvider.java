@@ -20,7 +20,7 @@ public class DeleteCmdProvider extends SubCommand {
 
         name = args[0];
         if (!plugin.getWallsManager().exists(name)) {
-            messageHandler.sendMessage(player, "error.wall.name-not-exists", "The wall {name} does not exists.", new Placeholder("name", name));
+            messageHandler.sendMessage(player, "error.wall.name-not-exists", "The wall {name} does not exists.", new Placeholder("{name}", name));
             return false;
         }
 

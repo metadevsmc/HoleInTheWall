@@ -13,12 +13,12 @@ public class DeleteCmdProvider extends SubCommand {
     }
 
     public boolean validateArgs() {
-        if (!checkArgs()) {
+        if (checkArgs()) {
             return false;
         }
         name = args[0];
         if (!plugin.getArenaManager().exists(name)) {
-            messageHandler.sendMessage(player, "error.arena.name-not-exists", "The arena {name} does not exists.", new Placeholder("name", name));
+            messageHandler.sendMessage(player, "error.arena.name-not-exists", "The arena {name} does not exists.", new Placeholder("{name}", name));
             return false;
         }
 

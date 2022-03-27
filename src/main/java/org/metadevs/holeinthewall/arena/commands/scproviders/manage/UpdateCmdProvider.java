@@ -20,7 +20,7 @@ public class UpdateCmdProvider extends SubCommand {
 
     @Override
     public boolean validateArgs() {
-        if (!checkArgs())
+        if (checkArgs())
             return false;
 
         arena = plugin.getArenaManager().getArena(args[0]);

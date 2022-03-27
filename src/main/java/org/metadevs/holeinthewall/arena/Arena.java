@@ -12,12 +12,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 import org.metadevs.holeinthewall.HoleInTheWall;
+import org.metadevs.holeinthewall.enums.Direction;
 import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.Option;
-import org.metadevs.holeinthewall.enums.Direction;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Arena  {
@@ -169,7 +171,7 @@ public class Arena  {
                         cancel();
                     } else {
                         cooldownBar.setTitle(plugin.getConfigString("lobby.bossbar.title", "Game starting in {seconds-left}", new Placeholder("{seconds-left}", seconds + "")));
-                        if (getNumberOfPlayers() == 0) {
+                        if (getNumberOfPlayers() < minPlayers) {
                             cooldownBar.removeAll();
                             countdown = null;
                             cooldownBar = null;
@@ -234,15 +236,44 @@ public class Arena  {
 
     public void reset() {
         status = Status.LOBBY;
+        for (Player player : getPlayers()) {
+            player.setHealth(20);
+            player.setFoodLevel(20);
+        }
         players.clear();
         spectators.clear();
         countdown = null;
         cooldownBar = null;
     }
 
+    public Location getSpectator() {
+        return locations.get("spectator");
+    }
+
+    public Location getPodium() {
+        return locations.get("podium");
+    }
+
+    public Location getLoosers() {
+        return locations.get("loosers");
+    }
+
+    public void stop() {
+        status = Status.LOBBY;
+        countdown = null;
+        cooldownBar = null;
+    }
+
+    public void join(Player player) {
+        addPlayer(player);
+        if ( cooldownBar!= null ) {
+            cooldownBar.addPlayer(player);
+        }
+    }
+
     public static class WallSpawn {
-        private Location min;
-        private Location max;
+        private final Location min;
+        private final Location max;
 
         public WallSpawn(Location min, Location max) {
             this.min = min;

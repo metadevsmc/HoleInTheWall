@@ -59,7 +59,6 @@ public class WallCmdProvider extends SubCommand {
             default:
                 sendHelp();
                 break;
-
         }
 
     }

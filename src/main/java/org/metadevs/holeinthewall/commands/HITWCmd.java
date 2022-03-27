@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.commands.ArenaCmdProvider;
+import org.metadevs.holeinthewall.commands.sc.SetGlobalLobbyCmdProvider;
 import org.metadevs.holeinthewall.metalib.messages.MessageHandler;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.walls.commands.WallCmdProvider;
@@ -17,7 +18,7 @@ import java.util.Arrays;
 public class HITWCmd implements CommandExecutor {
 
     private final HoleInTheWall plugin;
-    private MessageHandler<HoleInTheWall> messageHandler;
+    private final MessageHandler<HoleInTheWall> messageHandler;
 
 
     public HITWCmd(HoleInTheWall plugin) {
@@ -57,6 +58,17 @@ public class HITWCmd implements CommandExecutor {
                 if (wallCmdProvider.validateArgs())
                     wallCmdProvider.execute();
                 break;
+            case "sgl":
+                SetGlobalLobbyCmdProvider setGlobalLobbyCmdProvider = new SetGlobalLobbyCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
+                if (setGlobalLobbyCmdProvider.validateArgs())
+                    setGlobalLobbyCmdProvider.execute();
+                break;
+            case "reload":
+                if (isAdmin) {
+                    plugin.load();
+                    messageHandler.sendMessage(player, "&aPlugin reloaded");
+                }
+                break;
             case "help":
                 sendHelp(player, isAdmin);
                 break;
@@ -76,6 +88,7 @@ public class HITWCmd implements CommandExecutor {
         messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&larena &7- &aShow all arena related commands");
         if (isAdmin) {
             messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lwall &7- &aShow all wall related commands");
+            messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lsgl &7- &aSet the global lobby location at your current location");
             messageHandler.sendMessage(sender, "&7[&a+&7] /hitw &a&lreload &7- &aReload the plugin");
         }
     }

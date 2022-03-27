@@ -2,18 +2,12 @@ package org.metadevs.holeinthewall.arena.commands.scproviders.generators;
 
 import org.bukkit.entity.Player;
 import org.metadevs.holeinthewall.HoleInTheWall;
-import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.arena.commands.scproviders.generators.sc.SetCmdProvider;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
-import org.metadevs.holeinthewall.enums.Direction;
 
 import java.util.Arrays;
 
 public class WallCmdProvider extends SubCommand {
-
-    //hitw arena wall set <name> <direction>
-    private Arena arena;
-    private Direction direction;
 
     public WallCmdProvider(HoleInTheWall plugin, Player player, String... args) {
         super(plugin, player, true, args);

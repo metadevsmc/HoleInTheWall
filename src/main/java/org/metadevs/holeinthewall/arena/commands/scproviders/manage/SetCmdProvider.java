@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SetCmdProvider extends SubCommand {
 
-    private ConcurrentHashMap<String, Object> options;
+    private final ConcurrentHashMap<String, Object> options;
     private Arena arena;
     //             -    -    0       1            2
     //usage hitw arena set <name> {option=value, ...}
@@ -24,7 +24,7 @@ public class SetCmdProvider extends SubCommand {
 
     @Override
     public boolean validateArgs() {
-        if (!checkArgs()) {
+        if (checkArgs()) {
             messageHandler.sendMessage(player, "options: max-players, min-players, min-y");
             return false;
         }

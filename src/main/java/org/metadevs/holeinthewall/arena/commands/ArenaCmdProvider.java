@@ -92,6 +92,12 @@ public class ArenaCmdProvider extends SubCommand {
                     startCmdProvider.execute();
                 }
                 break;
+                case "stop":
+                StopCmdProvider stopCmdProvider = new StopCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
+                if (stopCmdProvider.validateArgs()) {
+                    stopCmdProvider.execute();
+                }
+                break;
             case "wall":
                 WallCmdProvider wallSpawnCmdProvider = new WallCmdProvider(plugin, player, Arrays.copyOfRange(args, 1, args.length));
                 if (wallSpawnCmdProvider.validateArgs()) {
@@ -131,6 +137,9 @@ public class ArenaCmdProvider extends SubCommand {
             player.sendMessage("");
             messageHandler.sendMessage(player, "&7- /hitw &carena &7start <name>");
             messageHandler.sendMessage(player, "   &7Start the arena with the given name");
+            player.sendMessage("");
+            messageHandler.sendMessage(player, "&7- /hitw &carena &7stop <name>");
+            messageHandler.sendMessage(player, "   &7Stop the arena with the given name");
             player.sendMessage("");
             messageHandler.sendMessage(player, "&7- /hitw &carena &7wall ");
             messageHandler.sendMessage(player, "   &7Show the wall related command");

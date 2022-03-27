@@ -26,14 +26,14 @@ public abstract class SubCommand implements CommandProvider {
         if (requireAdmin) {
             if (!player.isOp()) {
                 messageHandler.sendMessage(player, "error.only-admins" ,"I'm sorry, but only admins can use this commands.");
-                return false;
+                return true;
             }
         }
         if (args.length < 1) {
             messageHandler.sendMessage(player, "error.arena.name-not-specified", "You must specify a name for the arena.");
-            return  false;
+            return true;
         }
-        return true;
+        return false;
     }
 
 

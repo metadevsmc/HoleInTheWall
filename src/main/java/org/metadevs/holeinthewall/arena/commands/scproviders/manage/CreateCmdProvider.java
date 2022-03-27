@@ -12,12 +12,12 @@ public class CreateCmdProvider extends SubCommand {
     }
 
     public boolean validateArgs() {
-        if (!checkArgs()) {
+        if (checkArgs()) {
             return false;
         }
         String name = args[0];
         if (plugin.getArenaManager().exists(name)) {
-            messageHandler.sendMessage(player, "error.arena.name-already-exists", "The arena {name} already exists.", new Placeholder("name", name));
+            messageHandler.sendMessage(player, "error.arena.name-already-exists", "The arena {name} already exists.", new Placeholder("{name}", name));
             return false;
         }
         this.name = name;

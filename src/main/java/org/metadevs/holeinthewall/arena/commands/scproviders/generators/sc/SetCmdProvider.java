@@ -22,12 +22,12 @@ public class SetCmdProvider extends SubCommand {
 
     @Override
     public boolean validateArgs() {
-        if (!checkArgs()) {
+        if (checkArgs()) {
             return false;
         }
 
         if ((arena = plugin.getArenaManager().getArena(args[0])) == null) {
-            messageHandler.sendMessage(player, "error.arena.name-not-exists", "The arena {name} does not exists.", new Placeholder("name", args[0]));
+            messageHandler.sendMessage(player, "error.arena.name-not-exists", "The arena {name} does not exists.", new Placeholder("{name}", args[0]));
             return false;
         }
 

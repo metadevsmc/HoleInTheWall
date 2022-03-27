@@ -14,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Wall {
 
 
-    private String name;
-    private char[][] grid;
-    private Material[][] materialsGrid;
-    private int width;
-    private int height;
-    private ConcurrentHashMap<Character, Material> materials;
+    private final String name;
+    private final char[][] grid;
+    private final Material[][] materialsGrid;
+    private final int width;
+    private final int height;
+    private final ConcurrentHashMap<Character, Material> materials;
 
     public Wall(String name, ConcurrentHashMap<Character, String> materials, List<String> pattern) {
         this.name = name;

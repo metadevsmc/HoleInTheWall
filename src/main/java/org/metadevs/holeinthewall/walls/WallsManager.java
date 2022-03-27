@@ -3,11 +3,15 @@ package org.metadevs.holeinthewall.walls;
 import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Slime;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.enums.Direction;
+import org.metadevs.holeinthewall.enums.Status;
 
 import java.util.Collection;
 import java.util.Random;
@@ -34,7 +38,7 @@ public class WallsManager {
     }
 
     private void loadAllWalls() {
-        for (Wall wall: plugin.getDataManager().loadWalls()) {
+        for (Wall wall : plugin.getDataManager().loadWalls()) {
             walls.put(wall.getName(), wall);
         }
     }
@@ -45,8 +49,8 @@ public class WallsManager {
 
 
     public void createWall(String name, Region region) {
-        Wall wall =  Wall.craftFromRegion(name, region);
-        walls.put(name,wall);
+        Wall wall = Wall.craftFromRegion(name, region);
+        walls.put(name, wall);
         plugin.getDataManager().saveWall(wall);
     }
 
@@ -70,19 +74,43 @@ public class WallsManager {
             for (int y = 0; y < wall.getHeight(); y++) {
                 for (int z = 0; z < wall.getWidth(); z++) {
                     Material material = wallBlocks[y][z];
-                    placeBlock(wallLocations.getMin(), material, 0, -y, -z);
+                    placeBlock(wallLocations.getMax(), material, 0, -y, -z);
+                    //spawnSlime(wallLocations.getMax(), 0, -y, -z);
+
+
                 }
             }
         } else {
             for (int y = 0; y < wall.getHeight(); y++) {
                 for (int x = 0; x < wall.getWidth(); x++) {
                     Material material = wallBlocks[y][x];
-                    placeBlock(wallLocations.getMin(), material, -x, -y, 0);
+                    placeBlock(wallLocations.getMax(), material, -x, -y, 0);
+                    //spawnSlime(wallLocations.getMax(), -x, -y, 0);
+
                 }
             }
         }
     }
 
+    private void spawnSlime(Location max, int i, int i1, int i2) {
+        Slime entity = (Slime) max.getWorld().spawnEntity(max.clone().add(i, i1, i2), EntityType.SLIME);
+        entity.setSize(1);
+        entity.setCustomNameVisible(false);
+        entity.setInvisible(true);
+        entity.setCollidable(true);
+        entity.setAI(false);
+        entity.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOW, Integer.MAX_VALUE, 10000));
+    }
+
+    private void spawnSlime(Location loc) {
+        Slime entity = (Slime) loc.getWorld().spawnEntity(loc, EntityType.SLIME);
+        entity.setSize(1);
+        entity.setCustomNameVisible(false);
+        entity.setInvisible(true);
+        entity.setCollidable(true);
+        entity.setAI(false);
+        entity.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOW, Integer.MAX_VALUE, 10000));
+    }
 
 
     private Arena.WallSpawn getWallLocations(Direction direction, Arena arena) {
@@ -91,33 +119,14 @@ public class WallsManager {
 
 
     private void placeBlock(Location loc, Material material, int offsetX, int offsetY, int offsetZ) {
-        loc.clone().add(offsetX, offsetY, offsetZ).getBlock().setType(material);
-    }
-    private void placeBlock(Location loc, Material material, int offsetX, int offsetY, int offsetZ, Vector vector) {
-        loc.clone().add(offsetX, offsetY, offsetZ).add(vector).getBlock().setType(material);
+        Location locF = loc.clone().add(offsetX, offsetY, offsetZ);
+        Block block = locF.getBlock();
+        block.setType(material);
     }
 
-//    private void placeBlocks(Location min, Location max, Material[][] wallBlocks, Direction direction, int i, int j, int offset) {
-//        max.add(x,y,z).getBlock().setType();
-//        switch (direction) {
-//            case NORTH: {
-//                min.getWorld().getBlockAt(min.getBlockX() + i, min.getBlockY() + j, min.getBlockZ() + offset).setType(wallBlocks[i][j]);
-//                break;
-//            }
-//            case SOUTH: {
-//                max.getWorld().getBlockAt(max.getBlockX() - i, max.getBlockY() + j, max.getBlockZ() - offset).setType(wallBlocks[i][j]);
-//                break;
-//            }
-//            case EAST: {
-//                max.getWorld().getBlockAt(max.getBlockX() + offset, max.getBlockY() + j, max.getBlockZ() - i).setType(wallBlocks[i][j]);
-//                break;
-//            }
-//            case WEST: {
-//                min.getWorld().getBlockAt(min.getBlockX() - offset, min.getBlockY() + j, min.getBlockZ() + i).setType(wallBlocks[i][j]);
-//                break;
-//            }
-//        }
-//    }
+    private void placeBlock(Location loc, Material material) {
+        loc.getBlock().setType(material);
+    }
 
     private void moveWall(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int offset) {
 
@@ -129,38 +138,57 @@ public class WallsManager {
         //west to est +1 x
         //north to south +1 z
         //south to north -1 z
-        boolean isZ = wallLocations.getMin().getX() == wallLocations.getMax().getX();
+        boolean isZ = min.getX() == max.getX();
+        Vector vector = direction.getTo();
         if (isZ) {
+
             for (int y = 0; y < wall.getHeight(); y++) {
                 for (int z = 0; z < wall.getWidth(); z++) {
                     Material material = wallBlocks[y][z];
-                    placeBlock(min, Material.AIR, 0, -y, -z, new Vector().add(direction.getTo()).multiply(offset-1));
-                    placeBlock(min, material, 0, -y, -z, new Vector().add(direction.getTo()).multiply(offset));
+                    Location loc = getBlockLocation(max, 0, -y, -z, vector.clone().multiply(offset - 1));
+                    placeBlock(loc, Material.AIR);
+                    //loc.getNearbyEntitiesByType(EntityType.SLIME.getEntityClass(), 1).forEach(Entity::remove);
+                    loc = getBlockLocation(max, 0, -y, -z, vector.clone().multiply(offset));
+
+                    placeBlock(loc, material);
+                    //spawnSlime(loc);
+
 
                 }
             }
         } else {
+
             for (int y = 0; y < wall.getHeight(); y++) {
                 for (int x = 0; x < wall.getWidth(); x++) {
                     Material material = wallBlocks[y][x];
-                    placeBlock(min, Material.AIR, -x, -y, 0, new Vector().add(direction.getTo()).multiply(offset-1));
-                    placeBlock(min, material, -x, -y, 0, new Vector().add(direction.getTo()).multiply(offset));
+                    Location loc = getBlockLocation(max, -x, -y, 0, vector.clone().multiply(offset - 1));
+                    placeBlock(loc, Material.AIR);
+                    //loc.getNearbyEntitiesByType(EntityType.SLIME.getEntityClass(), 1).forEach(Entity::remove);
+                    loc = getBlockLocation(max, -x, -y, 0, vector.clone().multiply(offset));
+
+                    placeBlock(loc, material);
+
+
+                    //spawnSlime(loc);
+                    //loc = getBlockLocation(max, -x, -y, 0, vector.clone().multiply(offset));
+
 
                 }
             }
         }
     }
 
-    public CompletableFuture<Boolean> moveTask(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int speed) {
+    public CompletableFuture<Boolean> moveTask(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks,
+                                               int speed) {
         return CompletableFuture.supplyAsync(() -> {
 
             Semaphore semaphore = new Semaphore(0);
 
             Direction oppositeDirection =
                     direction.equals(Direction.NORTH) ? Direction.SOUTH :
-                    direction.equals(Direction.SOUTH) ? Direction.NORTH :
-                    direction.equals(Direction.EAST) ? Direction.WEST :
-                    Direction.EAST;
+                            direction.equals(Direction.SOUTH) ? Direction.NORTH :
+                                    direction.equals(Direction.EAST) ? Direction.WEST :
+                                            Direction.EAST;
 
             Arena.WallSpawn wallOppositesLocations = getWallLocations(oppositeDirection, arena);
 
@@ -173,11 +201,17 @@ public class WallsManager {
                 public void run() {
                     moveWall(wall, arena, direction, wallBlocks, offset);
                     offset++;
-                    if (offset >= distance) {
+                    if (arena.getNumberOfPlayers() == 1) {
+                        clearWall(wall, arena, direction, offset);
+                        this.cancel();
+                        return;
+                    }
+                    if (offset >= distance || arena.getStatus() == Status.ENDING) {
                         clearWall(wall, arena, direction, offset);
                         semaphore.release();
                         this.cancel();
                     }
+
                 }
             }.runTaskTimer(plugin, speed, speed);
 
@@ -196,25 +230,32 @@ public class WallsManager {
         //west to est +1 x
         //north to south +1 z
         //south to north -1 z
-        boolean isZ = wallLocations.getMin().getX() == wallLocations.getMax().getX();
+        Vector vector = direction.getTo();
+        boolean isZ = min.getX() == max.getX();
         if (isZ) {
             for (int y = 0; y < wall.getHeight(); y++) {
                 for (int z = 0; z < wall.getWidth(); z++) {
-                    placeBlock(min, Material.AIR, 0, -y, -z, new Vector().add(direction.getTo()).multiply(offset-1));
+                    Location loc = getBlockLocation(max, 0, -y, -z, vector.clone().multiply(offset - 1));
+                    placeBlock(loc, Material.AIR);
 
                 }
             }
         } else {
             for (int y = 0; y < wall.getHeight(); y++) {
                 for (int x = 0; x < wall.getWidth(); x++) {
-                    placeBlock(min, Material.AIR, -x, -y, 0, new Vector().add(direction.getTo()).multiply(offset-1));
-
+                    Location loc = getBlockLocation(max, -x, -y, 0, vector.clone().multiply(offset - 1));
+                    placeBlock(loc, Material.AIR);
                 }
             }
         }
     }
 
+    private Location getBlockLocation(Location location, int x, int y, int z, Vector vector) {
+        return location.clone().add(x, y, z).add(vector);
+    }
+
     public Collection<Wall> getWalls() {
         return walls.values();
     }
+
 }

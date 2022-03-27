@@ -91,8 +91,8 @@ public class DataManager {
                 if (wallSpawn == null) {
                     continue;
                 }
-                directionSection.set("max", arena.getWallSpawn(direction).getMin());
-                directionSection.set("min", arena.getWallSpawn(direction).getMax());
+                directionSection.set("max", arena.getWallSpawn(direction).getMax());
+                directionSection.set("min", arena.getWallSpawn(direction).getMin());
             }
 
             if (!fileHandler.save()) {

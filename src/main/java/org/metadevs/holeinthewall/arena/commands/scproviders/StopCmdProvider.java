@@ -7,11 +7,11 @@ import org.metadevs.holeinthewall.enums.Status;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.utils.abstracts.SubCommand;
 
-public class StartCmdProvider extends SubCommand {
+public class StopCmdProvider extends SubCommand {
 
     private Arena arena;
 
-    public StartCmdProvider(HoleInTheWall plugin, Player player, String... args) {
+    public StopCmdProvider(HoleInTheWall plugin, Player player, String... args) {
         super(plugin, player, true, args);
     }
 
@@ -27,8 +27,8 @@ public class StartCmdProvider extends SubCommand {
         }
         arena = plugin.getArenaManager().getArena(name);
 
-        if(!arena.getStatus().equals(Status.LOBBY) && !arena.getStatus().equals(Status.STARTING)) {
-            messageHandler.sendMessage(player, "error.arena.not-lobby", "The arena {name} is not in lobby or starting status.", new Placeholder("{name}", name));
+        if(!arena.getStatus().equals(Status.PLAYING)) {
+            messageHandler.sendMessage(player, "error.arena.not-started", "The arena {name} is not started yet", new Placeholder("{name}", name));
             return false;
         }
 
@@ -37,7 +37,9 @@ public class StartCmdProvider extends SubCommand {
 
     @Override
     public void execute() {
-        arena.initCooldown(plugin);
-        messageHandler.sendMessage(player, "success.arena.start", "The arena {name} has started.", new Placeholder("{name}", arena.getName()));
+        plugin.getArenaManager().endGame(arena);
+        messageHandler.sendMessage(player, "success.arena.stop", "The arena {name} has been stopped", new Placeholder("{name}", arena.getName()));
     }
+
+
 }

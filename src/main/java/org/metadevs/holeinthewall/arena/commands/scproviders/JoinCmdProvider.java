@@ -18,7 +18,7 @@ public class JoinCmdProvider extends SubCommand {
 
     @Override
     public boolean validateArgs() {
-        if (!checkArgs()) {
+        if (checkArgs()) {
             return false;
         }
 

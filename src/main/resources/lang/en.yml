@@ -30,17 +30,26 @@ general:
     list-header: "&7Arenas:"
     list-entry: "&7{name} &7- &7{minPlayers}/{maxPlayers} &7- &7{status}"
     starting-soon: "The game will start in {seconds-left} seconds"
+    game-ended: "The game has end now you will be teleported to the lobby"
   wall:
     list-header: "&7Walls:"
     list-entry: "&7{name}"
+  global-lobby-set: "&7Global lobby set to your current position"
+
 ############################################################################
 success:
   wall-spawn:
     set: "The spawn of the wall {direction} has been set"
   arena:
+    join: "&7[&a+&7] &a&l{player}"
     updated: "&a The arena {name} has been updated"
     created: "&a The arena {name} has been created"
     deleted: "&a The arena {name} has been deleted"
     joined: "&a You have joined the arena {name}"
     left: "&a You have left the game"
     start: "&a The arena {name} has started"
+    eliminated: "&a {player} has been eliminated remaining players: {remaining}"
+    eliminated-self-message: "&a You have been eliminated remaining players: {remaining}"
+    win: "&a {player} has won the game"
+    win-self-message: "&a Congratulation You have won the game"
+    stop: "&a The arena {name} has stopped"

@@ -8,7 +8,7 @@ import org.metadevs.holeinthewall.metalib.MetaLibs;
 import org.metadevs.holeinthewall.metalib.Utils;
 import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import org.metadevs.holeinthewall.players.PlayerManager;
-import org.metadevs.holeinthewall.players.listeners.PlayerInteractArena;
+import org.metadevs.holeinthewall.players.listeners.*;
 import org.metadevs.holeinthewall.walls.WallsManager;
 
 public final class HoleInTheWall extends JavaPlugin {
@@ -46,7 +46,15 @@ public final class HoleInTheWall extends JavaPlugin {
     private void registerListeners() {
         //new ArenaListener(this);
         new PlayerInteractArena(this);
+        new PlayerFall(this);
+        new PlayerLose(this);
+        new PlayerWin(this);
+        new PlayerDamaged(this);
+        new PlayerJoin(this);
+        new PlayerLeave(this);
+
     }
+
 
     public void registerCommands() {
         getCommand("hitw").setExecutor(new HITWCmd(this));
