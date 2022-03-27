@@ -70,21 +70,21 @@ public class PlayerManager {
     }
 
     public void startMoveTask(Player player) {
-        playersTasks.put(player, new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (player.isOnline()) {
-                    if (isPlaying(player)) {
-                        if (player.getLocation().getBlock().isSolid() || player.getEyeLocation().getBlock().isSolid()) {
-                            Arena arena = getArena(player);
-                            player.setVelocity(player.getFacing().getDirection().multiply(-2));
-                        }
-                    }
-                } else {
-                    cancel();
-                }
-            }
-        }.runTaskTimer(plugin, 0,5));
+//        playersTasks.put(player, new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                if (player.isOnline()) {
+//                    if (isPlaying(player)) {
+//                        if (player.getLocation().getBlock().isSolid() || player.getEyeLocation().getBlock().isSolid()) {
+//                            Arena arena = getArena(player);
+//                            player.setVelocity(player.getFacing().getDirection().multiply(-2));
+//                        }
+//                    }
+//                } else {
+//                    cancel();
+//                }
+//            }
+//        }.runTaskTimer(plugin, 0,5));
     }
 }
 
