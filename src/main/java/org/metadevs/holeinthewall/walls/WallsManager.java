@@ -2,7 +2,6 @@ package org.metadevs.holeinthewall.walls;
 
 import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import org.checkerframework.checker.units.qual.min;
 import org.metadevs.holeinthewall.HoleInTheWall;
 import org.metadevs.holeinthewall.arena.Arena;
 import org.metadevs.holeinthewall.enums.Direction;
@@ -203,6 +201,8 @@ public class WallsManager {
 
                 @Override
                 public void run() {
+                    
+                    checkCollision(wall, arena, direction, wallBlocks, offset);
                     moveWall(wall, arena, direction, wallBlocks, offset);
                     offset++;
                     if (arena.getNumberOfPlayers() == 1) {
@@ -240,6 +240,31 @@ public class WallsManager {
 
             return true;
         });
+    }
+
+    private void checkCollision(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int offset) {
+        Location traslatedMin = getBlockLocation(arena.getWallSpawn(direction).getMin(), 0, 0, 0, direction.getTo().clone().multiply(offset));
+        Location traslatedMax = getBlockLocation(arena.getWallSpawn(direction).getMax(), 0, 0, 0, direction.getTo().clone().multiply(offset));
+
+        for (Player player : arena.getPlayers()) {
+            if (plugin.getPlayerManager().isPlayerInArea(player, traslatedMin, traslatedMax)) {
+                Location relativeFoot = player.getLocation().clone().subtract(traslatedMax);
+                Location relativeEye = player.getEyeLocation().clone().subtract(traslatedMax);
+                boolean isZ = relativeFoot.getBlockZ() == traslatedMax.getBlockZ();
+                if (isZ) {
+                    if (wallBlocks[relativeFoot.getBlockZ()][relativeFoot.getBlockY()] != Material.AIR && wallBlocks[relativeEye.getBlockZ()][relativeEye.getBlockY()] != Material.AIR) {
+                        player.setVelocity(direction.getTo().clone().multiply(1.5));
+                    }
+                } else {
+                    if (wallBlocks[relativeFoot.getBlockX()][relativeFoot.getBlockY()] != Material.AIR && wallBlocks[relativeEye.getBlockX()][relativeEye.getBlockY()] != Material.AIR) {
+                        player.setVelocity(direction.getTo().clone().multiply(1.5));
+                    }
+                }
+
+
+            }
+        }
+
     }
 
     private boolean checkPlayerIn(Player player, Location min, Location max) {

@@ -52,6 +52,7 @@ public final class HoleInTheWall extends JavaPlugin {
         new PlayerDamaged(this);
         new PlayerJoin(this);
         new PlayerLeave(this);
+        new PlayerClickItem(this);
 
     }
 

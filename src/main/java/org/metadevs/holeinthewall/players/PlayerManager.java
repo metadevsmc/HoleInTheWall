@@ -1,7 +1,10 @@
 package org.metadevs.holeinthewall.players;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 import org.metadevs.holeinthewall.HoleInTheWall;
@@ -11,15 +14,19 @@ import org.metadevs.holeinthewall.metalib.messages.Placeholder;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.metadevs.holeinthewall.metalib.Utils.color;
+
 public class PlayerManager {
     private final HoleInTheWall plugin;
     private final ConcurrentHashMap<Player, String> players;
     private final ConcurrentHashMap<Player, BukkitTask> playersTasks;
+    private final ConcurrentHashMap<Player, ItemStack[]> playersInventory;
 
     public PlayerManager(HoleInTheWall holeInTheWall) {
         this.plugin = holeInTheWall;
         players = new ConcurrentHashMap<>();
         playersTasks = new ConcurrentHashMap<Player, org.bukkit.scheduler.BukkitTask>();
+        playersInventory = new  ConcurrentHashMap<Player, ItemStack[]>();
     }
 
     @Nullable
@@ -41,16 +48,44 @@ public class PlayerManager {
         }
 
         player.teleport(arena.getLobby());
+        plugin.getPlayerManager().giveLobbyItem(player);
         players.put(player, arena.getName());
+    }
+
+    public void giveLobbyItem(Player player) {
+
+        playersInventory.put(player, player.getInventory().getContents());
+
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
+        //Give lobby Item
+
+        ItemStack item = new ItemStack(Material.RED_WOOL);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(color("&c&lLeave Arena"));
+        item.setItemMeta(meta);
+        player.getInventory().setItem(0, item);
+
+        player.updateInventory();
+    }
+
+    public void takeLobbyItem(Player player) {
+        ItemStack[] inventory = playersInventory.remove(player);
+        if (inventory != null) {
+            player.getInventory().setContents(inventory);
+        }
     }
 
     public void leaveArena(Player player) {
         Arena arena = plugin.getArenaManager().getArena(players.get(player));
         if (arena != null) {
+
             arena.removePlayer(player);
         }
         //todo teleport to lobby
         players.remove(player);
+        takeLobbyItem(player);
+
     }
 
     public Arena getArena(Player player) {
@@ -85,6 +120,13 @@ public class PlayerManager {
 //                }
 //            }
 //        }.runTaskTimer(plugin, 0,5));
+    }
+
+    public boolean isPlayerInArea(Player player, Location traslatedMin, Location traslatedMax) {
+
+        return player.getLocation().getX() >= traslatedMin.getX() && player.getLocation().getX() <= traslatedMax.getX() &&
+                player.getLocation().getY() >= traslatedMin.getY() && player.getLocation().getY() <= traslatedMax.getY() &&
+                player.getLocation().getZ() >= traslatedMin.getZ() && player.getLocation().getZ() <= traslatedMax.getZ();
     }
 }
 

@@ -126,6 +126,7 @@ public class ArenaManager {
                     public void run() {
                         arena.getPlayers().forEach(player -> {
                             player.teleport(arena.getSpawn());
+                            player.getInventory().clear();
                         });
                     }
                 }.runTask(plugin);
