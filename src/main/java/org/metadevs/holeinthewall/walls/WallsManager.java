@@ -234,10 +234,10 @@ public class WallsManager {
         Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
         Location min = wallLocations.getMin().clone();
         Location max = wallLocations.getMax().clone();
-        Location traslatedMin = min.add(direction.getTo().multiply(offset-1));
+        Location traslatedMin = min.add(direction.getTo().multiply(offset));
         Location traslatedMax = max.add(direction.getTo().multiply(offset));
         traslatedMin.getBlock().setType(Material.RED_WOOL);
-        traslatedMax.getBlock().setType(Material.RED_WOOL);
+        traslatedMax.clone().add(0, 1, 0).getBlock().setType(Material.RED_WOOL);
 
         for (Player player : arena.getPlayers()) {
             //broadcast min and max
