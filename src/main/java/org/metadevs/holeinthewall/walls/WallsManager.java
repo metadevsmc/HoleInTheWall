@@ -241,7 +241,7 @@ public class WallsManager {
 
         for (Player player : arena.getPlayers()) {
             //broadcast min and max
-            Bukkit.broadcastMessage(min + " " + max);
+            //Bukkit.broadcastMessage(min + " " + max);
             if (plugin.getPlayerManager().isPlayerInArea(player, traslatedMin, traslatedMax)) {
 //                Location relativeFoot = traslatedMax.clone().subtract(player.getLocation().getBlock().getLocation());
 //                boolean isZ = relativeFoot.getBlockZ() == traslatedMax.getBlockZ();
@@ -259,8 +259,10 @@ public class WallsManager {
 //                }
                 boolean check = player.getLocation().clone().add(direction.getTo().clone()).getBlock().getType() == Material.AIR;
                 boolean check2 = player.getEyeLocation().clone().add(direction.getTo().clone()).getBlock().getType() == Material.AIR;
+                boolean check3 = player.getLocation().clone().getBlock().getType() == Material.AIR;
+                boolean check4 = player.getEyeLocation().clone().getBlock().getType() == Material.AIR;
 
-                Bukkit.broadcastMessage(player.getName() + " -> " + check + " " + check2);
+                Bukkit.broadcastMessage(player.getName() + " -> " + check + " " + check2 + " " + check3 + " " + check4);
 
 
 
