@@ -240,6 +240,8 @@ public class WallsManager {
         traslatedMax.getBlock().setType(Material.RED_WOOL);
 
         for (Player player : arena.getPlayers()) {
+            //broadcast min and max
+            Bukkit.broadcastMessage(min + " " + max);
             if (plugin.getPlayerManager().isPlayerInArea(player, traslatedMin, traslatedMax)) {
 //                Location relativeFoot = traslatedMax.clone().subtract(player.getLocation().getBlock().getLocation());
 //                boolean isZ = relativeFoot.getBlockZ() == traslatedMax.getBlockZ();
