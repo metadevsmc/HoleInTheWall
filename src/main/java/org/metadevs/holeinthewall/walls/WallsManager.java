@@ -1,7 +1,6 @@
 package org.metadevs.holeinthewall.walls;
 
 import com.sk89q.worldedit.regions.Region;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -219,20 +218,8 @@ public class WallsManager {
                     if (wallLocations.getMin() == null || wallLocations.getMax() == null) {
                         plugin.getLogger().warning("WallLocations is null");
                         return;
-                    }
-                    for (Player player : arena.getPlayers()) {
-                        Location min = wallLocations.getMin().clone();
-                        Location max = wallLocations.getMax().clone().add(direction.getTo());
-                        if (checkPlayerIn(player, min, max)) {
-                            Bukkit.broadcastMessage(player.getName() + "maybe is in wall");
 
-                            if ((player.getLocation().clone().getBlock().getType().isSolid() || player.getEyeLocation().clone().getBlock().getType().isSolid()) ||
-                                    player.getLocation().clone().add(direction.getTo()).getBlock().getType().isSolid() || player.getEyeLocation().clone().add(direction.getTo()).getBlock().getType().isSolid()) {
-                                Bukkit.broadcastMessage(player.getName() + " is in wall");
-                            }
-                        }
                     }
-
                 }
             }.runTaskTimer(plugin, speed, speed);
 
@@ -243,22 +230,29 @@ public class WallsManager {
     }
 
     private void checkCollision(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int offset) {
-        Location traslatedMin = getBlockLocation(arena.getWallSpawn(direction).getMin(), 0, 0, 0, direction.getTo().clone().multiply(offset));
-        Location traslatedMax = getBlockLocation(arena.getWallSpawn(direction).getMax(), 0, 0, 0, direction.getTo().clone().multiply(offset));
+        Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
+        Location min = wallLocations.getMin().clone();
+        Location max = wallLocations.getMax().clone();
+        Location traslatedMin = min.add(direction.getTo().multiply(offset-1));
+        Location traslatedMax = max.add(direction.getTo().multiply(offset));
+        traslatedMin.getBlock().setType(Material.RED_WOOL);
+        traslatedMax.getBlock().setType(Material.RED_WOOL);
 
         for (Player player : arena.getPlayers()) {
             if (plugin.getPlayerManager().isPlayerInArea(player, traslatedMin, traslatedMax)) {
-                Location relativeFoot = player.getLocation().clone().subtract(traslatedMax);
-                Location relativeEye = player.getEyeLocation().clone().subtract(traslatedMax);
+                Location relativeFoot = traslatedMax.clone().subtract(player.getLocation().getBlock().getLocation());
                 boolean isZ = relativeFoot.getBlockZ() == traslatedMax.getBlockZ();
                 if (isZ) {
-                    if (wallBlocks[relativeFoot.getBlockZ()][relativeFoot.getBlockY()] != Material.AIR && wallBlocks[relativeEye.getBlockZ()][relativeEye.getBlockY()] != Material.AIR) {
-                        player.setVelocity(direction.getTo().clone().multiply(1.5));
-                    }
+//                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockZ())].isCollidable()
+//                        && wallBlocks[Math.abs(relativeFoot.getBlockY())- 1][Math.abs(relativeFoot.getBlockZ())].isCollidable()) {
+//
+                       player.setVelocity(direction.getTo().clone().multiply(1.3));
+//                    }
                 } else {
-                    if (wallBlocks[relativeFoot.getBlockX()][relativeFoot.getBlockY()] != Material.AIR && wallBlocks[relativeEye.getBlockX()][relativeEye.getBlockY()] != Material.AIR) {
-                        player.setVelocity(direction.getTo().clone().multiply(1.5));
-                    }
+//                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockX())].isCollidable()
+ //                           && wallBlocks[Math.abs(relativeFoot.getBlockY())-1][Math.abs(relativeFoot.getBlockX())].isCollidable()) {
+                    player.setVelocity(direction.getTo().clone().multiply(1.5));
+   //                 }
                 }
 
 

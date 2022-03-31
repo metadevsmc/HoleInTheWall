@@ -124,9 +124,9 @@ public class PlayerManager {
 
     public boolean isPlayerInArea(Player player, Location traslatedMin, Location traslatedMax) {
 
-        return player.getLocation().getX() >= traslatedMin.getX() && player.getLocation().getX() <= traslatedMax.getX() &&
-                player.getLocation().getY() >= traslatedMin.getY() && player.getLocation().getY() <= traslatedMax.getY() &&
-                player.getLocation().getZ() >= traslatedMin.getZ() && player.getLocation().getZ() <= traslatedMax.getZ();
+        return player.getLocation().getBlock().getX() >= traslatedMin.getX() && player.getLocation().getBlock().getX() <= traslatedMax.getX() &&
+                player.getLocation().getBlock().getY()>= traslatedMin.getY() && player.getLocation().getBlock().getY() <= traslatedMax.getY() &&
+                player.getLocation().getBlock().getZ() >= traslatedMin.getZ() && player.getLocation().getBlock().getZ() <= traslatedMax.getZ();
     }
 }
 

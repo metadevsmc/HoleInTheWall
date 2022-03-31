@@ -30,7 +30,7 @@ public enum Direction {
     }
 
     public Vector getTo() {
-        return to;
+        return to.clone();
     }
 }
 
