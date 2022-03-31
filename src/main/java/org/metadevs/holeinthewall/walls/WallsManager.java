@@ -1,6 +1,7 @@
 package org.metadevs.holeinthewall.walls;
 
 import com.sk89q.worldedit.regions.Region;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -240,20 +241,25 @@ public class WallsManager {
 
         for (Player player : arena.getPlayers()) {
             if (plugin.getPlayerManager().isPlayerInArea(player, traslatedMin, traslatedMax)) {
-                Location relativeFoot = traslatedMax.clone().subtract(player.getLocation().getBlock().getLocation());
-                boolean isZ = relativeFoot.getBlockZ() == traslatedMax.getBlockZ();
-                if (isZ) {
-//                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockZ())].isCollidable()
-//                        && wallBlocks[Math.abs(relativeFoot.getBlockY())- 1][Math.abs(relativeFoot.getBlockZ())].isCollidable()) {
-//
-                       player.setVelocity(direction.getTo().clone().multiply(1.3));
-//                    }
-                } else {
-//                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockX())].isCollidable()
- //                           && wallBlocks[Math.abs(relativeFoot.getBlockY())-1][Math.abs(relativeFoot.getBlockX())].isCollidable()) {
-                    player.setVelocity(direction.getTo().clone().multiply(1.5));
-   //                 }
-                }
+//                Location relativeFoot = traslatedMax.clone().subtract(player.getLocation().getBlock().getLocation());
+//                boolean isZ = relativeFoot.getBlockZ() == traslatedMax.getBlockZ();
+//                if (isZ) {
+////                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockZ())].isCollidable()
+////                        && wallBlocks[Math.abs(relativeFoot.getBlockY())- 1][Math.abs(relativeFoot.getBlockZ())].isCollidable()) {
+////
+//                       player.setVelocity(direction.getTo().clone().multiply(1.3));
+////                    }
+//                } else {
+////                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockX())].isCollidable()
+// //                           && wallBlocks[Math.abs(relativeFoot.getBlockY())-1][Math.abs(relativeFoot.getBlockX())].isCollidable()) {
+//                    player.setVelocity(direction.getTo().clone().multiply(1.5));
+//   //                 }
+//                }
+                boolean check = player.getLocation().clone().add(direction.getTo().clone()).getBlock().getType() == Material.AIR;
+                boolean check2 = player.getEyeLocation().clone().add(direction.getTo().clone()).getBlock().getType() == Material.AIR;
+
+                Bukkit.broadcastMessage(player.getName() + " -> " + check + " " + check2);
+
 
 
             }
@@ -263,6 +269,15 @@ public class WallsManager {
 
     private boolean checkPlayerIn(Player player, Location min, Location max) {
         return player.getLocation().getX() >= min.getX() && player.getLocation().getX() <= max.getX() && player.getLocation().getZ() >= min.getZ() && player.getLocation().getZ() <= max.getZ();
+    }
+
+    public boolean isInArea(Location loc, Location min, Location max) {
+        return (min.getX() <= loc.getX()
+                && min.getY() <= loc.getY()
+                && min.getZ() <= loc.getZ()
+                && max.getX() >= loc.getX()
+                && max.getY() >= loc.getY()
+                && max.getZ() >= loc.getZ());
     }
 
     private void clearWall(Wall wall, Arena arena, Direction direction, int offset) {
