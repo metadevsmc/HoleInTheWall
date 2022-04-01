@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
@@ -201,7 +202,7 @@ public class WallsManager {
 
                 @Override
                 public void run() {
-                    
+
                     checkCollision(wall, arena, direction, wallBlocks, offset);
                     moveWall(wall, arena, direction, wallBlocks, offset);
                     offset++;
@@ -234,37 +235,29 @@ public class WallsManager {
         Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
         Location min = wallLocations.getMin().clone();
         Location max = wallLocations.getMax().clone();
-        Location traslatedMin = min.add(direction.getTo().multiply(offset));
-        Location traslatedMax = max.add(direction.getTo().multiply(offset));
-        //traslatedMin.getBlock().setType(Material.RED_WOOL);
-        //traslatedMax.clone().add(0, 1, 0).getBlock().setType(Material.RED_WOOL);
+
+        boolean checkD = (direction.equals(Direction.SOUTH) || direction.equals(Direction.EAST));
+
+        Location traslatedMin = min.add(direction.getTo().clone().multiply(checkD ? offset+1 : offset)); //south +1 and east +1
+        Location traslatedMax = max.add(direction.getTo().clone().multiply(checkD ? offset : offset+1)); //west +1 and north +1
+
 
         for (Player player : arena.getPlayers()) {
-            //broadcast min and max
-            //Bukkit.broadcastMessage(min + " " + max);
+
             if (plugin.getPlayerManager().isPlayerInArea(player, traslatedMin, traslatedMax)) {
-//                Location relativeFoot = traslatedMax.clone().subtract(player.getLocation().getBlock().getLocation());
-//                boolean isZ = relativeFoot.getBlockZ() == traslatedMax.getBlockZ();
-//                if (isZ) {
-////                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockZ())].isCollidable()
-////                        && wallBlocks[Math.abs(relativeFoot.getBlockY())- 1][Math.abs(relativeFoot.getBlockZ())].isCollidable()) {
-////
-//                       player.setVelocity(direction.getTo().clone().multiply(1.3));
-////                    }
-//                } else {
-////                    if (wallBlocks[Math.abs(relativeFoot.getBlockY())][Math.abs(relativeFoot.getBlockX())].isCollidable()
-// //                           && wallBlocks[Math.abs(relativeFoot.getBlockY())-1][Math.abs(relativeFoot.getBlockX())].isCollidable()) {
-//                    player.setVelocity(direction.getTo().clone().multiply(1.5));
-//   //                 }
-//                }
-                boolean check = player.getLocation().clone().add(direction.getTo().clone()).getBlock().getType() == Material.AIR;
-                boolean check2 = player.getEyeLocation().clone().add(direction.getTo().clone()).getBlock().getType() == Material.AIR;
-                boolean check3 = player.getLocation().clone().getBlock().getType() == Material.AIR;
-                boolean check4 = player.getEyeLocation().clone().getBlock().getType() == Material.AIR;
 
-                Bukkit.broadcastMessage(player.getName() + " -> " + check + " " + check2 + " " + check3 + " " + check4);
+                boolean check = player.getLocation().clone().add(direction.invert().getTo().clone().multiply(2)).getBlock().getType() == Material.AIR;
+                boolean check2 = player.getLocation().clone().clone().add(direction.invert().getTo().clone().multiply(2).add(new Vector(0, 1, 0))).getBlock().getType() == Material.AIR;
+                boolean check3 = player.getLocation().clone().add(direction.invert().getTo().clone()).getBlock().getType() == Material.AIR;
+                boolean check4 = player.getLocation().clone().clone().add(direction.invert().getTo().clone().add(new Vector(0, 1, 0))).getBlock().getType() == Material.AIR;
+                boolean check5 = player.getLocation().clone().getBlock().getType() == Material.AIR;
+                boolean check6 = player.getLocation().clone().add(new Vector(0, 1, 0)).getBlock().getType() == Material.AIR;
 
 
+                if(!check || !check2 || !check3 || !check4 || !check5 || !check6) {
+                    player.teleport(player.getLocation().clone().add(direction.getTo().clone().multiply(1.1)));
+                    player.setVelocity(direction.getTo().clone().multiply(plugin.getConfig().getDouble("push", 0.7)));
+                }
 
             }
         }
