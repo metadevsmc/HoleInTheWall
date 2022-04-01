@@ -203,7 +203,7 @@ public class WallsManager {
                 @Override
                 public void run() {
 
-                    checkCollision(wall, arena, direction, wallBlocks, offset);
+                    checkCollision(arena, direction, offset);
                     moveWall(wall, arena, direction, wallBlocks, offset);
                     offset++;
                     if (arena.getNumberOfPlayers() == 1) {
@@ -231,15 +231,15 @@ public class WallsManager {
         });
     }
 
-    private void checkCollision(Wall wall, Arena arena, Direction direction, Material[][] wallBlocks, int offset) {
+    private void checkCollision(Arena arena, Direction direction, int offset) {
         Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
         Location min = wallLocations.getMin().clone();
         Location max = wallLocations.getMax().clone();
 
         boolean checkD = (direction.equals(Direction.SOUTH) || direction.equals(Direction.EAST));
 
-        Location traslatedMin = min.add(direction.getTo().clone().multiply(checkD ? offset+1 : offset)); //south +1 and east +1
-        Location traslatedMax = max.add(direction.getTo().clone().multiply(checkD ? offset : offset+1)); //west +1 and north +1
+        Location traslatedMin = min.add(direction.getTo().clone().multiply(checkD ? offset + 1 : offset)); //south +1 and east +1
+        Location traslatedMax = max.add(direction.getTo().clone().multiply(checkD ? offset : offset + 1)); //west +1 and north +1
 
 
         for (Player player : arena.getPlayers()) {
@@ -254,7 +254,7 @@ public class WallsManager {
                 boolean check6 = player.getLocation().clone().add(new Vector(0, 1, 0)).getBlock().getType() == Material.AIR;
 
 
-                if(!check || !check2 || !check3 || !check4 || !check5 || !check6) {
+                if (!check || !check2 || !check3 || !check4 || !check5 || !check6) {
                     player.teleport(player.getLocation().clone().add(direction.getTo().clone().multiply(1.1)));
                     player.setVelocity(direction.getTo().clone().multiply(plugin.getConfig().getDouble("push", 0.7)));
                 }
@@ -264,18 +264,6 @@ public class WallsManager {
 
     }
 
-    private boolean checkPlayerIn(Player player, Location min, Location max) {
-        return player.getLocation().getX() >= min.getX() && player.getLocation().getX() <= max.getX() && player.getLocation().getZ() >= min.getZ() && player.getLocation().getZ() <= max.getZ();
-    }
-
-    public boolean isInArea(Location loc, Location min, Location max) {
-        return (min.getX() <= loc.getX()
-                && min.getY() <= loc.getY()
-                && min.getZ() <= loc.getZ()
-                && max.getX() >= loc.getX()
-                && max.getY() >= loc.getY()
-                && max.getZ() >= loc.getZ());
-    }
 
     private void clearWall(Wall wall, Arena arena, Direction direction, int offset) {
         Arena.WallSpawn wallLocations = getWallLocations(direction, arena);
